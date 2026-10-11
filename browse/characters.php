@@ -50,7 +50,7 @@ else {
 	$colwidth = (100/ $displaycolumns) -1;
 	$count = 0;
 	$column = 1;
-	$result2 = dbquery($charquery." ORDER BY charname LIMIT $offset,$limit");
+	$result2 = dbquery($charquery." ORDER BY charname OFFSET $offset LIMIT $limit");
 	$output .= "<div id=\"columncontainer\"><div id=\"browseblock\">".($displaycolumns ? "<div class=\"column\">" : "");
 	while($char = dbassoc($result2)) {
 		$count++;

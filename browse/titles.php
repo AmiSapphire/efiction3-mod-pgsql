@@ -28,6 +28,6 @@ $current = "titles";
 
 	if($let == _OTHER) $storyquery .= " AND stories.title REGEXP '^[^a-z]'";
 	else if(!empty($let)) $storyquery .= " AND stories.title LIKE '$let%'";
-	$storyquery  .= _ORDERBY;
+	$storyquery  .= " GROUP BY stories.title "._ORDERBY."";
 	$numrows = search(_STORYQUERY.$storyquery, _STORYCOUNT.$storyquery, "browse.php?");
 ?>

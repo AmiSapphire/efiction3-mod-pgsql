@@ -66,7 +66,7 @@ if($let) {
 	}
 
 $count = dbquery(_SERIESCOUNT.(!empty($seriesquery) ? " WHERE ".$seriesquery : ""));
-$query = _SERIESQUERY.(!empty($seriesquery) ? " AND ".$seriesquery : "")." ORDER BY series.title LIMIT $offset, $itemsperpage";
+$query = _SERIESQUERY.(!empty($seriesquery) ? " AND ".$seriesquery : "")." ORDER BY series.title OFFSET $offset LIMIT $itemsperpage";
 list($numrows)= dbrow($count);
 $sresult = dbquery($query);
 $count = 0;
