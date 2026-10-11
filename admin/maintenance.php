@@ -96,7 +96,7 @@ else if($maint == "stories") {
 			else $alist[$ca['uid']] = $ca['count'];
 		}
 		foreach($alist AS $a => $s) {
-			dbquery("UPDATE ".TABLEPREFIX."fanfiction_authorprefs SET stories = '$s' WHERE uid = '$a' LIMIT 1");
+			dbquery("UPDATE ".TABLEPREFIX."fanfiction_authorprefs SET stories = '$s' WHERE uid = '$a'");
 		}
 		$count =  dbquery("SELECT SUM(wordcount) as count, sid FROM ".TABLEPREFIX."fanfiction_chapters WHERE validated = '1' GROUP BY sid");
 		while($c = dbassoc($count)) {
@@ -151,7 +151,7 @@ else if($maint == "stats") {
 	$totalseries = dbnumrows($serieslist);
 	while($s = dbassoc($serieslist)) {
 		$numstories = count(storiesInSeries($s['seriesid']));
-		dbquery("UPDATE ".TABLEPREFIX."fanfiction_series SET numstories = '$numstories' WHERE seriesid = ".$s['seriesid']." LIMIT 1");
+		dbquery("UPDATE ".TABLEPREFIX."fanfiction_series SET numstories = '$numstories' WHERE seriesid = ".$s['seriesid']."");
 	}
 
 	$newslist = dbquery("SELECT count(cid) as count, nid FROM ".TABLEPREFIX."fanfiction_comments GROUP BY nid");
@@ -180,7 +180,7 @@ else if($maint == "stats") {
 	dbquery("UPDATE ".TABLEPREFIX."fanfiction_stats SET series = '$totalseries', chapters = '$chapters', members = '$members', newestmember = '$newest', reviews = '$reviews', reviewers = '$reviewers' WHERE sitekey = '".SITEKEY."'"); 
 	$news = dbquery("SELECT count(nid) as count, nid FROM ".TABLEPREFIX."fanfiction_comments GROUP BY nid");
 	while($n = dbassoc($news)) {
-		dbquery("UPDATE ".TABLEPREFIX."fanfiction_news SET comments = '".$n['count']."' WHERE nid = '".$n['nid']."' LIMIT 1");
+		dbquery("UPDATE ".TABLEPREFIX."fanfiction_news SET comments = '".$n['count']."' WHERE nid = '".$n['nid']."'");
 	}
 	$output .= write_message(_ACTIONSUCCESSFUL);
 }
@@ -192,7 +192,7 @@ else if($maint == "panels") {
 				$count = 1;
 				$plist = dbquery("SELECT panel_name, panel_id FROM ".TABLEPREFIX."fanfiction_panels WHERE panel_hidden = '0' AND panel_type = '".$ptype['panel_type']."' AND panel_level = '$x' ORDER BY panel_level, panel_order");
 				while($p = dbassoc($plist)) {
-					dbquery("UPDATE ".TABLEPREFIX."fanfiction_panels SET panel_order = '$count' WHERE panel_id = '".$p['panel_id']."' LIMIT 1");
+					dbquery("UPDATE ".TABLEPREFIX."fanfiction_panels SET panel_order = '$count' WHERE panel_id = '".$p['panel_id']."'");
 					$count++;
 				}
 			}
@@ -201,7 +201,7 @@ else if($maint == "panels") {
 			$count = 1;
 			$plist = dbquery("SELECT panel_name, panel_id FROM ".TABLEPREFIX."fanfiction_panels WHERE panel_hidden = '0' AND panel_type = '".$ptype['panel_type']."' ORDER BY ".($ptype['panel_type'] == "A" ? "panel_level," : "")."panel_order");
 			while($p = dbassoc($plist)) {
-				dbquery("UPDATE ".TABLEPREFIX."fanfiction_panels SET panel_order = '$count' WHERE panel_id = '".$p['panel_id']."' LIMIT 1");
+				dbquery("UPDATE ".TABLEPREFIX."fanfiction_panels SET panel_order = '$count' WHERE panel_id = '".$p['panel_id']."'");
 				$count++;
 			}
 		}
@@ -209,14 +209,14 @@ else if($maint == "panels") {
 	$output .= write_message(_ACTIONSUCCESSFUL);
 }
 else if($maint == "optimize") {
-	$alltables = dbquery("SHOW TABLES");
+	$alltables = dbquery("SELECT * FROM pg_catalog.pg_tables WHERE schemaname = '".TABLEPREFIX."'");
 
 	while ($table = dbassoc($alltables)) {
 		foreach ($table as $db => $tablename) {
 			dbquery("OPTIMIZE TABLE ".$tablename."");
 		}
 	}
- 	if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (log_action, log_uid, log_ip, log_type, log_timestamp) VALUES('".escapestring(sprintf(_LOG_OPTIMIZE, USERPENNAME, USERUID))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'AM', " . time() . ")");
+ 	if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (log_action, log_uid, log_ip, log_type, log_timestamp) VALUES('".escapestring(sprintf(_LOG_OPTIMIZE, USERPENNAME, USERUID))."', '".USERUID. "', '".$_SERVER['REMOTE_ADDR']."', 'AM', " . time() . ")");
 	$output .= write_message(_ACTIONSUCCESSFUL);
 }
 else if($maint == "backup") {
