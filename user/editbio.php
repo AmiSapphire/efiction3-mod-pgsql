@@ -93,7 +93,7 @@ function random_string ($charset_string, $length)
 					}
 					dbquery("INSERT INTO ".substr(_AUTHORTABLE, 0, strpos(_AUTHORTABLE, "as author"))." (penname, realname, bio, email, date, password) VALUES ('".escapestring($penname)."', '".escapestring(strip_tags($_POST['realname']))."', '".strip_tags(escapestring($_POST['bio']), $allowed_tags)."', '$email'," . time() . ", '$encryppass')");
 					$useruid = dbinsertid();
-					if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (`log_action`, `log_uid`, `log_ip`, `log_type`, `log_timestamp`) VALUES('".escapestring(sprintf(_LOG_REGISTER, $penname, $useruid, $_SERVER['REMOTE_ADDR']))."', '".$useruid. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'RG', " . time() . ")");
+					if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (log_action, log_uid, log_ip, log_type, log_timestamp) VALUES('".escapestring(sprintf(_LOG_REGISTER, $penname, $useruid, $_SERVER['REMOTE_ADDR']))."', '".$useruid. "', '".$_SERVER['REMOTE_ADDR']."', 'RG', " . time() . ")");
 					if(empty($siteskin)) {
 						$skinquery = dbquery("SELECT skin FROM ".$settingsprefix."fanfiction_settings WHERE sitekey = '".SITEKEY."'");
 						list($skin) = dbrow($skinquery);
@@ -175,7 +175,7 @@ function random_string ($charset_string, $length)
 				}
 				else {
 					dbquery("UPDATE "._AUTHORTABLE." SET penname = '".escapestring($penname)."' WHERE uid = '$_POST[uid]'");
-					if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (`log_action`, `log_uid`, `log_ip`, `log_type`, `log_timestamp`) VALUES('".escapestring(sprintf(_NEWPEN, USERPENNAME, USERUID, $_POST['oldpenname'], $uid, $penname))."', '".USERUID."', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'EB', " . time() . ")");
+					if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (log_action, log_uid, log_ip, log_type, log_timestamp) VALUES('".escapestring(sprintf(_NEWPEN, USERPENNAME, USERUID, $_POST['oldpenname'], $uid, $penname))."', '".USERUID."', '".$_SERVER['REMOTE_ADDR']."', 'EB', " . time() . ")");
 				}
 			}
 /* The section adds fields from the authorfields table to the authorinfo table allowing dynamic additions to the bio/registration page */
