@@ -33,7 +33,7 @@ if(!defined("_CHARSET")) exit( );
 			}
 			break;
 		case "favauthors":
-			$result = dbquery("SELECT count( fav.item ) AS count, "._UIDFIELD." as uid, "._PENNAMEFIELD." as penname FROM ".TABLEPREFIX."fanfiction_favorites AS fav, "._AUTHORTABLE." WHERE fav.item = "._UIDFIELD." AND fav.type = 'AU' GROUP  BY fav.item ORDER  BY count DESC LIMIT 10");
+			$result = dbquery("SELECT count( fav.item ) AS count, (ARRAY_AGG("._UIDFIELD."))[0] as uid, (ARRAY_AGG("._PENNAMEFIELD."))[0] as penname FROM ".TABLEPREFIX."fanfiction_favorites AS fav, "._AUTHORTABLE." WHERE fav.item = "._UIDFIELD." AND fav.type = 'AU' GROUP  BY fav.item ORDER  BY count DESC LIMIT 10");
 			if(dbnumrows($result) == 0) $output .= write_message(_NORESULTS);
 			$count = 1;
 			while($author = dbassoc($result)) {
@@ -42,7 +42,7 @@ if(!defined("_CHARSET")) exit( );
 			}
 			break;
 		case "favstories":
-			$result = dbquery("SELECT count( fav.item ) AS count, stories.*, "._PENNAMEFIELD." as penname, stories.date as date, stories.updated as updated FROM ".TABLEPREFIX."fanfiction_favorites AS fav, "._AUTHORTABLE.", ".TABLEPREFIX."fanfiction_stories as stories WHERE stories.uid = "._UIDFIELD." AND stories.validated > 0 AND fav.item = stories.sid AND fav.type = 'ST' GROUP  BY stories.sid ORDER  BY count DESC LIMIT 10");
+			$result = dbquery("SELECT count( fav.item ) AS stcount, stories.*, (ARRAY_AGG("._PENNAMEFIELD."))[0] as penname, stories.date as date, stories.updated as updated FROM ".TABLEPREFIX."fanfiction_favorites AS fav, "._AUTHORTABLE.", ".TABLEPREFIX."fanfiction_stories as stories WHERE stories.uid = "._UIDFIELD." AND stories.validated > 0 AND fav.item = stories.sid AND fav.type = 'ST' GROUP  BY stories.sid ORDER  BY stcount DESC LIMIT 10");
 			if(dbnumrows($result) == 0) $output .= write_message(_NORESULTS);
 			$tpl->newBlock("listings");
 			while($stories = dbassoc($result)) { 
@@ -51,19 +51,19 @@ if(!defined("_CHARSET")) exit( );
 			}
 			break;
 		case "favseries" :
-			$result = dbquery("SELECT count(fav.item) AS count, series.*,  "._PENNAMEFIELD." as penname FROM (".TABLEPREFIX."fanfiction_series AS series, ".TABLEPREFIX."fanfiction_favorites as fav, "._AUTHORTABLE.") WHERE series.uid = "._UIDFIELD." AND fav.item = series.seriesid AND fav.type = 'SE' GROUP BY series.seriesid ORDER BY count DESC LIMIT 10");
+			$result = dbquery("SELECT count(fav.item) AS secount, series.*,  (ARRAY_AGG("._PENNAMEFIELD."))[0] as penname FROM (".TABLEPREFIX."fanfiction_series AS series CROSS JOIN ".TABLEPREFIX."fanfiction_favorites as fav CROSS JOIN "._AUTHORTABLE.") WHERE series.uid = "._UIDFIELD." AND fav.item = series.seriesid AND fav.type = 'SE' GROUP BY series.seriesid ORDER BY secount DESC LIMIT 10");
 			if(dbnumrows($result) == 0) $output .= write_message(_NORESULTS);
 			$tpl->newBlock("listings");
 			while($stories = dbassoc($result)) { include("includes/seriesblock.php"); }
 			break;
 		case "largeseries":
-			$result = dbquery("SELECT count(inorder.seriesid) AS count, sub.*,  "._PENNAMEFIELD." as penname FROM ".TABLEPREFIX."fanfiction_series AS sub, ".TABLEPREFIX."fanfiction_inseries as inorder, "._AUTHORTABLE." WHERE sub.uid = "._UIDFIELD." AND inorder.seriesid = sub.seriesid GROUP BY sub.seriesid ORDER BY count DESC LIMIT 10");
+			$result = dbquery("SELECT count(inorder.seriesid) AS count, sub.*,  (ARRAY_AGG("._PENNAMEFIELD."))[0] as penname FROM ".TABLEPREFIX."fanfiction_series AS sub, ".TABLEPREFIX."fanfiction_inseries as inorder, "._AUTHORTABLE." WHERE sub.uid = "._UIDFIELD." AND inorder.seriesid = sub.seriesid GROUP BY sub.seriesid ORDER BY count DESC LIMIT 10");
 			if(dbnumrows($result) == 0) $output .= write_message(_NORESULTS);
 			$tpl->newBlock("listings");
 			while($stories = dbassoc($result)) { include("includes/seriesblock.php"); }
 			break;
 		case "smallseries":
-			$result = dbquery("SELECT count(inorder.seriesid) AS count, sub.*,  "._PENNAMEFIELD." as penname FROM ".TABLEPREFIX."fanfiction_series AS sub, ".TABLEPREFIX."fanfiction_inseries as inorder, "._AUTHORTABLE." WHERE sub.uid = "._UIDFIELD." AND inorder.seriesid = sub.seriesid GROUP BY sub.seriesid ORDER BY count LIMIT 10");
+			$result = dbquery("SELECT count(inorder.seriesid) AS count, sub.*,  (ARRAY_AGG("._PENNAMEFIELD."))[0] as penname FROM ".TABLEPREFIX."fanfiction_series AS sub, ".TABLEPREFIX."fanfiction_inseries as inorder, "._AUTHORTABLE." WHERE sub.uid = "._UIDFIELD." AND inorder.seriesid = sub.seriesid GROUP BY sub.seriesid ORDER BY count LIMIT 10");
 			if(dbnumrows($result) == 0) $output .= write_message(_NORESULTS);
 			$tpl->newBlock("listings");
 			while($stories = dbassoc($result)) { include("includes/seriesblock.php"); }
@@ -84,7 +84,7 @@ if(!defined("_CHARSET")) exit( );
 			}
 			break;	
 		case "prolificreviewers":
-			$result = dbquery("SELECT count(reviews.uid) AS count, "._PENNAMEFIELD." as penname , "._UIDFIELD." as uid FROM ".TABLEPREFIX."fanfiction_reviews as reviews, "._AUTHORTABLE." WHERE reviews.uid = "._UIDFIELD." AND reviews.review != 'No Review' GROUP BY reviews.uid ORDER BY count DESC LIMIT 10");
+			$result = dbquery("SELECT count(reviews.uid) AS count, (ARRAY_AGG("._PENNAMEFIELD."))[0] as penname , (ARRAY_AGG("._UIDFIELD."))[0] as uid FROM ".TABLEPREFIX."fanfiction_reviews as reviews, "._AUTHORTABLE." WHERE reviews.uid = "._UIDFIELD." AND reviews.review != 'No Review' GROUP BY reviews.uid ORDER BY count DESC LIMIT 10");
 			if(dbnumrows($result) == 0) $output .= write_message(_NORESULTS);
 			$count = 1;
 			while($author = dbassoc($result)) {
