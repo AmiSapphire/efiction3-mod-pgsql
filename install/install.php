@@ -678,7 +678,7 @@ switch ($_GET['step'])
   log_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY,
   log_action VARCHAR(255) default NULL,
   log_uid INTEGER NOT NULL,
-  log_ip BYTEA DEFAULT NULL,
+  log_ip INET DEFAULT NULL,
   log_timestamp CHAR(10) NOT NULL default '0',
   log_type VARCHAR(2) NOT NULL,
   PRIMARY KEY  (log_id)
