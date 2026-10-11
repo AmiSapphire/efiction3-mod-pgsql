@@ -82,7 +82,7 @@ if($maint == "reviews") {
 	while($code = dbassoc($codequery)) {
 		$eval($code['code_text']);
 	}
-	if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (`log_action`, `log_uid`, `log_ip`, `log_type`, `log_timestamp`) VALUES('".escapestring(sprintf(_LOG_RECALCREVIEWS, USERPENNAME, USERUID))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'AM', " . time() . ")");
+	if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (log_action, log_uid, log_ip, log_type, log_timestamp) VALUES('".escapestring(sprintf(_LOG_RECALCREVIEWS, USERPENNAME, USERUID))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'AM', " . time() . ")");
 	$output .= write_message(_ACTIONSUCCESSFUL);
 }
 else if($maint == "stories") {
@@ -120,7 +120,7 @@ else if($maint == "categories") {
 		list($count) = dbrow($countquery);
 		dbquery("UPDATE ".TABLEPREFIX."fanfiction_categories SET numitems = $count WHERE catid = $cat[0]");
 	}
-	if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (`log_action`, `log_uid`, `log_ip`, `log_type`, `log_timestamp`) VALUES('".escapestring(sprintf(_LOG_CATCOUNTS, USERPENNAME, USERUID))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'AM', " . time() . ")");
+	if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (log_action, log_uid, log_ip, log_type, log_timestamp) VALUES('".escapestring(sprintf(_LOG_CATCOUNTS, USERPENNAME, USERUID))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'AM', " . time() . ")");
 	$output .= write_message(_CATCOUNTSUPDATED);
 }
 else if($maint == "categories2") {
@@ -145,7 +145,7 @@ else if($maint == "categories2") {
 else if($maint == "stats") {
 	// check that the statisics is working before doing anything else
 	$check = dbquery("SELECT * FROM ".TABLEPREFIX."fanfiction_stats WHERE sitekey = '".SITEKEY."' LIMIT 1");
-	if(dbnumrows($check) < 1) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_stats(`sitekey`) VALUES('".SITEKEY."')");
+	if(dbnumrows($check) < 1) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_stats(sitekey) VALUES('".SITEKEY."')");
 
 	$serieslist = dbquery("SELECT seriesid FROM ".TABLEPREFIX."fanfiction_series");
 	$totalseries = dbnumrows($serieslist);
@@ -162,8 +162,9 @@ else if($maint == "stats") {
 	$storiesquery =dbquery("SELECT COUNT(sid) as totals, SUM(wordcount) as totalwords FROM ".TABLEPREFIX."fanfiction_stories WHERE validated > 0 ");
 
 	list($stories, $words) = dbrow($storiesquery);
+	if ($words == "") $words = 0;  // PostgreSQL does not like empty strings as integers
 	list($authors) = dbrow(dbquery("SELECT count(uid) FROM ".TABLEPREFIX."fanfiction_authorprefs WHERE stories > 0"));
-	dbquery("UPDATE ".TABLEPREFIX."fanfiction_stats SET stories = '$stories', authors = '$authors', wordcount = '$words' WHERE sitekey = '".SITEKEY."'"); 
+	dbquery("UPDATE ".TABLEPREFIX."fanfiction_stats SET stories = '$stories', authors = '$authors', wordcount = '$words' WHERE sitekey = '".SITEKEY."'");
 
 	$chapterquery = dbquery("SELECT COUNT(chapid) as chapters FROM ".TABLEPREFIX."fanfiction_chapters where validated > 0");
 	list($chapters) = dbrow($chapterquery);
@@ -212,10 +213,10 @@ else if($maint == "optimize") {
 
 	while ($table = dbassoc($alltables)) {
 		foreach ($table as $db => $tablename) {
-			dbquery("OPTIMIZE TABLE `".$tablename."`");
+			dbquery("OPTIMIZE TABLE ".$tablename."");
 		}
 	}
- 	if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (`log_action`, `log_uid`, `log_ip`, `log_type`, `log_timestamp`) VALUES('".escapestring(sprintf(_LOG_OPTIMIZE, USERPENNAME, USERUID))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'AM', " . time() . ")");
+ 	if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (log_action, log_uid, log_ip, log_type, log_timestamp) VALUES('".escapestring(sprintf(_LOG_OPTIMIZE, USERPENNAME, USERUID))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'AM', " . time() . ")");
 	$output .= write_message(_ACTIONSUCCESSFUL);
 }
 else if($maint == "backup") {

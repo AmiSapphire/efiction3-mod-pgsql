@@ -33,7 +33,7 @@ if(!defined("_CHARSET")) exit( );
 				$result = dbquery("UPDATE ".TABLEPREFIX."fanfiction_authorprefs SET level = '0' WHERE uid = '".$_GET['revoke']."'");
 				if($result) $output .=  write_message(_ACTIONSUCCESSFUL);
 				else {
-					$result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorprefs(`level`, `uid`) VALUES ('0', '".$_GET['revoke']."')"); // shouldn't be possible, but better safe than sorry.
+					$result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorprefs(level, uid) VALUES ('0', '".$_GET['revoke']."')"); // shouldn't be possible, but better safe than sorry.
 					$output .= write_error(_ERROR." "._TRYAGAIN);
 				}
 			}
@@ -50,7 +50,7 @@ if(!defined("_CHARSET")) exit( );
 			if($_POST['catid']) $categories = $_POST['catid'];
 			else $categories = "0";
 			if(check_prefs($_POST['uid'])) $result = dbquery("UPDATE ".TABLEPREFIX."fanfiction_authorprefs SET level = '".$_POST['adlevel']."', contact = '$contact', categories = '$categories' WHERE uid = '".$_POST['uid']."'");
-			else $result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorprefs(`level`, `contact`, `categories`,  `uid`) VALUES ('".$_POST['adlevel']."', '$contact', '$categories', '".$_POST['uid']."')");
+			else $result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorprefs(level, contact, categories,  uid) VALUES ('".$_POST['adlevel']."', '$contact', '$categories', '".$_POST['uid']."')");
 			if($result) $output .= write_message(_ACTIONSUCCESSFUL._BACK2ADMIN);
 			else $output .= write_message(_ERROR);
 		}
@@ -110,7 +110,7 @@ if(!defined("_CHARSET")) exit( );
 		$authorlink = "<a href=\"admin.php?action=admins&amp;do=edit&amp;uid=";
 		$pagelink = "admin.php?action=admins&amp;";
 		$countquery = "SELECT count(uid) FROM ".TABLEPREFIX."fanfiction_authorprefs WHERE level > 0";
-		$authorquery = "SELECT "._PENNAMEFIELD." as penname, "._UIDFIELD." as uid, count(stories.uid) as stories FROM (".TABLEPREFIX."fanfiction_authorprefs as ap, "._AUTHORTABLE.") LEFT JOIN ".TABLEPREFIX."fanfiction_stories as stories ON ("._UIDFIELD." = stories.uid) AND stories.validated > 0 WHERE ap.level > 0 ".(isset($letter) ? " AND $letter" : "")." AND ap.uid = "._UIDFIELD." GROUP BY "._UIDFIELD;
+		$authorquery = "SELECT "._PENNAMEFIELD." as penname, "._UIDFIELD." as uid, count(stories.uid) as stories FROM (".TABLEPREFIX."fanfiction_authorprefs as ap CROSS JOIN "._AUTHORTABLE.") LEFT JOIN ".TABLEPREFIX."fanfiction_stories as stories ON ("._UIDFIELD." = stories.uid) AND stories.validated > 0 WHERE ap.level > 0 ".(isset($letter) ? " AND $letter" : "")." AND ap.uid = "._UIDFIELD." GROUP BY "._UIDFIELD;
 		include("includes/members_list.php");
 		$output .= write_message("<a href=\"admin.php?action=admins&do=new\">"._ADDADMIN."</a>");
 	}

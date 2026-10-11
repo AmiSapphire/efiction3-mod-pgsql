@@ -24,7 +24,7 @@ if(!defined("_CHARSET")) exit( );
 
 	$output .= "<div id=\"pagetitle\">"._LINKS."</div>";
 if(isset($_GET['delete']) && isNumber($_GET['delete'])) {
-	$result = dbquery("DELETE FROM ".TABLEPREFIX."fanfiction_pagelinks WHERE link_id = $_GET[delete] LIMIT 1");
+	$result = dbquery("DELETE FROM ".TABLEPREFIX."fanfiction_pagelinks WHERE link_id = $_GET[delete]");
 	if($result) $output .= write_message(_ACTIONSUCCESSFUL);
 	else $output .= write_error(_ERROR);
 }
@@ -39,8 +39,8 @@ if(isset($_POST['submit'])) {
 		$link_target = descript($_POST['link_target']);
 		$link_key = strlen($_POST['link_key']) > 1 ? substr($_POST['link_key'], 0, 1) : $_POST['link_key']; // only one letter please.
 		if(isset($_GET['edit']) && isNumber($_GET['edit'])) 
-			$result = dbquery("UPDATE ".TABLEPREFIX."fanfiction_pagelinks SET link_name = '".escapestring($link_name)."', link_text = '".escapestring($link_text)."', link_key = '$link_key', link_url = '".escapestring($link_url)."', link_target = '$link_target', link_access = '$link_access' WHERE link_id = $_GET[edit] LIMIT 1");
-		else $result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_pagelinks(`link_name`, `link_text`, `link_key`, `link_url`, `link_target`, `link_access`) VALUES('".escapestring($link_name)."', '".escapestring($link_text)."', '".escapestring($link_key)."', '".escapestring($link_url)."', '$link_target', '$link_access')");
+			$result = dbquery("UPDATE ".TABLEPREFIX."fanfiction_pagelinks SET link_name = '".escapestring($link_name)."', link_text = '".escapestring($link_text)."', link_key = '$link_key', link_url = '".escapestring($link_url)."', link_target = '$link_target', link_access = '$link_access' WHERE link_id = $_GET[edit]");
+		else $result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_pagelinks(link_name, link_text, link_key, link_url, link_target, link_access) VALUES('".escapestring($link_name)."', '".escapestring($link_text)."', '".escapestring($link_key)."', '".escapestring($link_url)."', '$link_target', '$link_access')");
 		if($result) {
 			$output .= write_message(_ACTIONSUCCESSFUL);
 			$linkquery = dbquery("SELECT * from ".TABLEPREFIX."fanfiction_pagelinks ORDER BY link_access ASC");
@@ -59,7 +59,7 @@ if(isset($_POST['submit'])) {
 }
 if(isset($_GET['edit']) || isset($_GET["new"])) {
 	if(isset($_GET['edit'])) {
-		$pagequery = dbquery("SELECT * FROM ".TABLEPREFIX."fanfiction_pagelinks WHERE link_id = ".$_GET['edit']." LIMIT 1");
+		$pagequery = dbquery("SELECT * FROM ".TABLEPREFIX."fanfiction_pagelinks WHERE link_id = ".$_GET['edit']."");
 		$link =  dbassoc($pagequery);
 		$id = $link['link_id'];
 		$name = $link['link_name'];

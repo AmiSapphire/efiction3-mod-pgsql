@@ -46,7 +46,7 @@ $confirm = isset($_GET['confirm']) ? $_GET['confirm'] : false;
 		$output .= "<div class='sectionheader'>"._LOCKMEM."</div>";
 		if($confirm == "yes") {
 			if(check_prefs($_GET['lock'])) dbquery("UPDATE ".TABLEPREFIX."fanfiction_authorprefs SET level = '-1' WHERE uid = '".$_GET['lock']."'");
-			else dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorprefs(`uid`, `level`) VALUES('".$_GET['lock']."', '-1')");
+			else dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorprefs(uid, level) VALUES('".$_GET['lock']."', '-1')");
 			$output .= write_message(_ACTIONSUCCESSFUL);
 		}
 		else if ($confirm == "no") {
@@ -144,7 +144,7 @@ $confirm = isset($_GET['confirm']) ? $_GET['confirm'] : false;
 		$output .= "<div class='sectionheader'>"._NONVALMEMBERS."</div>";
 		if($confirm == "yes") {
 			if(check_prefs($_GET['validate'])) dbquery("UPDATE ".TABLEPREFIX."fanfiction_authorprefs SET validated = '1' WHERE uid = '".$_GET['validate']."'");
-			else dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorprefs(`uid`, `validated`) VALUES('".$_GET['validate']."', '1')");
+			else dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorprefs(uid, validated) VALUES('".$_GET['validate']."', '1')");
 			$output .= write_message(_ACTIONSUCCESSFUL);
 		}
 		else if ($confirm == "no") {
@@ -168,7 +168,7 @@ $confirm = isset($_GET['confirm']) ? $_GET['confirm'] : false;
 			if(preg_match("!^[a-z0-9_ ]{3,30}$!i", $_POST['penname'])) {
 				dbquery("INSERT INTO ".substr(_AUTHORTABLE, 0, strpos(_AUTHORTABLE, "as author"))."(penname, realname, email, admincreated, date) VALUES ('".escapestring(descript($_POST['penname']))."', '".escapestring(descript($_POST['realname']))."', '".escapestring(descript($_POST['email']))."', '1', '" . time() . "')");
 				$newuid = dbinsertid( );
-				if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (`log_action`, `log_uid`, `log_ip`, `log_type`, `log_timestamp`) VALUES('".escapestring(sprintf(_LOG_ADMIN_REG, descript($_POST['penname']), $newuid, USERPENNAME, USERUID, $_SERVER['REMOTE_ADDR']))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'RG', " . time() . ")");
+				if($logging) dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_log (log_action, log_uid, log_ip, log_type, log_timestamp) VALUES('".escapestring(sprintf(_LOG_ADMIN_REG, descript($_POST['penname']), $newuid, USERPENNAME, USERUID, $_SERVER['REMOTE_ADDR']))."', '".USERUID. "', INET6_ATON('".$_SERVER['REMOTE_ADDR']."'), 'RG', " . time() . ")");
 				if(!$skin) {
 					$skinquery = dbquery("SELECT skin FROM ".$settingsprefix."fanfiction_settings WHERE sitekey ='".SITEKEY."'");
 					list($skin) = dbrow($skinquery);

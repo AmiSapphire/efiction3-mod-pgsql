@@ -203,7 +203,7 @@ function relevelcategory($cat, $leveldown) {
 				<INPUT  type='text' class='textbox=' name='category'".($new ? ">" : "value='$cat1[category]'><input type='hidden' name='catid' value='$cat1[catid]'>")." <A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_CATNAME."</span></A></div>
 				<div><label for='description'>"._DESC.": </label><A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_CATDESC."</span></A>
 				<div style='margin-left: 30%; padding-left: 1em;'><textarea class='textbox' id='description' name='description' id='description' cols='35' rows='4'>".(!$new ? $cat1['description'] : "")."</textarea></div>";
-			if($tinyMCE) 
+			if($tinymce)
 				$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('description');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 			
 			$output.= "</div>

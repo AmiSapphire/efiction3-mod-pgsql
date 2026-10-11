@@ -29,7 +29,7 @@ if(!defined("_CHARSET")) exit( );
 $output .= "<div id=\"pagetitle\">"._SUBMITTED."</div>";
 $view = isset($_GET['view']) ? $_GET['view'] : false;
 $output .= 	"<p style=\"text-align: right; margin: 1em;\"><a href=\"admin.php?action=submitted&amp;view=".($view == "all" ? "cats\">"._VIEWMYCATS : "all\">"._VIEWALL)."</a></p>";
-$result = dbquery("SELECT story.title as storytitle, chapter.uid, chapter.sid, story.catid, chapter.chapid, chapter.inorder, chapter.title, "._PENNAMEFIELD." as penname FROM (".TABLEPREFIX."fanfiction_chapters as chapter, "._AUTHORTABLE.") LEFT JOIN ".TABLEPREFIX."fanfiction_stories as story ON story.sid = chapter.sid WHERE chapter.validated = '0' AND chapter.uid = "._UIDFIELD." ORDER BY story.title");
+$result = dbquery("SELECT story.title as storytitle, chapter.uid, chapter.sid, story.catid, chapter.chapid, chapter.inorder, chapter.title, "._PENNAMEFIELD." as penname FROM (".TABLEPREFIX."fanfiction_chapters as chapter CROSS JOIN "._AUTHORTABLE.") LEFT JOIN ".TABLEPREFIX."fanfiction_stories as story ON story.sid = chapter.sid WHERE chapter.validated = '0' AND chapter.uid = "._UIDFIELD." ORDER BY story.title");
 
 if(dbnumrows($result)) {
 	$output .= "<table class=\"tblborder\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin: 0 auto; width: 90%;\"><tr class=\"tblborder\"><th>"._TITLE."</th><th>"._AUTHOR."</th><th>"._CATEGORY."</th><th>"._OPTIONS."</th></tr>";

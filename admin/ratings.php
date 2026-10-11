@@ -81,7 +81,7 @@ $output .= "<div id=\"pagetitle\">"._RATINGS."</div>";
 		<INPUT type=\"checkbox\" class=\"checkbox\" name=\"rusersonly\"".(!$new && $warninglevel[0] ? " checked" : "")."><A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_RATINGUSERS."</span></A></div>
 		<div style=\"width: 170%;\"><label for='warningtext'>"._WARNINGTEXT.": </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_RATINGWARNTEXT."</span></A></div>
 		<textarea class=\"textarea\" name=\"warningtext\" cols=\"35\" rows=\"4\">".($new ? "" : $rating['warningtext'])."</TEXTAREA>";
-		if($tinyMCE) 
+		if($tinymce)
 			$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('warningtext');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";	
 		$output .= "<div style='text-align: center;'></div><INPUT type=\"submit\" class=\"button\" id='submit' value=\""._SUBMIT."\" name=\"submit\">";
 	}

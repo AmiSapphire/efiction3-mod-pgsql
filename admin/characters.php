@@ -79,7 +79,7 @@ if(!defined("_CHARSET")) exit( );
 			$output .= "<div class='sectionheader'>".(isset($charid) ? _EDITCHAR : _NEWCHAR." $x")."</div>
 				<div><label for='character$x'>"._CHARACTER.":</label><input type=\"text\" class=\"textbox\" name=\"character$x\" size=\"35\"".(isset($charinfo['charname']) ? " value=\"".$charinfo['charname']."\"" : "")."> <A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_CHARS."</span></A></div>
 				<div><label for='bio$x'>"._DESC.":</label><textarea class=\"textbox\" rows=\"6\" cols=\"40\" id= 'bio$x' name=\"bio$x\">".(isset($charinfo) ? $charinfo['bio'] : "")."</textarea></div>";
-			if($tinyMCE) 
+			if($tinymce)
 				$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('bio$x');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";	
 		}
 		$output .= "<div id='submitdiv'><INPUT type=\"submit\" id=\"submit\" class=\"button\" name=\"submit\" value=\""._SUBMIT."\"></div></form></div><div style='clear: both;'>";

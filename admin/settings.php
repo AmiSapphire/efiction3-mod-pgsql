@@ -62,7 +62,7 @@ $output .= "<div id='pagetitle'>"._SETTINGS."</div><div style='text-align: cente
 	<a href='admin.php?action=messages&message=welcome'>"._WELCOME."</a> | 
 	<a href='admin.php?action=messages&message=copyright'>"._COPYRIGHT."</a> | 
 	<a href='admin.php?action=messages&message=printercopyright'>"._PRINTERCOPYRIGHT."</a> | 
-	<a href='admin.php?action=messages&message=tinyMCE'>"._TINYMCE."</a> | 
+	<a href='admin.php?action=messages&message=tinyMCE'>"._TINYMCE."</a> |
 	<a href='admin.php?action=messages&message=nothankyou'>"._NOTHANKYOU."</a> | 
 	<a href='admin.php?action=messages&message=thankyou'>"._THANKYOU."</a><br />";
 	$settingsquery = dbquery("SELECT * FROM ".TABLEPREFIX."fanfiction_panels WHERE panel_type = 'AS' ORDER BY panel_title");
@@ -233,7 +233,7 @@ else if(isset($_POST['submit'])) {
 
 	}
 	else if($sect == "sitesettings") {
-		$tinyMCE = ($_POST['newtinyMCE'] == 1  OR $_POST['newtinyMCE'] == 2 OR $_POST['newtinyMCE'] == 3 OR $_POST['newtinyMCE'] == 4 OR $_POST['newtinyMCE'] == 5) ? $_POST['newtinyMCE'] : 0;
+		$tinymce = ($_POST['newtinymce'] == 1  OR $_POST['newtinymce'] == 2 OR $_POST['newtinymce'] == 3 OR $_POST['newtinymce'] == 4 OR $_POST['newtinymce'] == 5) ? $_POST['newtinymce'] : 0;
 		$allowed_tags = $_POST['newallowed_tags'];
 		$favorites = $_POST['newfavorites'] == 1 ? 1 : 0;
 		$multiplecats = $_POST['newmultiplecats'] == 1 ? 1 : 0;
@@ -243,7 +243,7 @@ else if(isset($_POST['submit'])) {
 		$maintenance = $_POST['newmaint'] == 1 ? 1 : 0;
 		$debug = $_POST['newdebug'] == 1 ? 1 : 0;
 		$captcha = $_POST['newcaptcha'] == 1 ? 1 : 0;
-		$result = dbquery("UPDATE ".$settingsprefix."fanfiction_settings SET tinyMCE = '$tinyMCE', favorites = '$favorites', multiplecats = '$multiplecats', setreg = '$setreg', allowed_tags = '$allowed_tags', newscomments = '$newscomments', logging = '$logging', maintenance = '$maintenance', debug = '$debug', captcha = '$captcha' WHERE sitekey ='".SITEKEY."'");
+		$result = dbquery("UPDATE ".$settingsprefix."fanfiction_settings SET tinymce = '$tinymce', favorites = '$favorites', multiplecats = '$multiplecats', setreg = '$setreg', allowed_tags = '$allowed_tags', newscomments = '$newscomments', logging = '$logging', maintenance = '$maintenance', debug = '$debug', captcha = '$captcha' WHERE sitekey ='".SITEKEY."'");
 	}
 	else if($sect == "display") {
 		$dateformat = $_POST['newdateformat'] ? descript(strip_tags($_POST['newdateformat'])) : descript(strip_tags($_POST['customdateformat']));
@@ -418,13 +418,13 @@ else if(isset($_POST['submit'])) {
 		$output .= "<div class='sectionheader'>"._SITESETTINGS."</div>
 		<table class='acp' style='margin: 0 auto;'>
 			<tr>
-				<td><label for='newtinyMCE'>"._USETINYMCE. ": </label></td><td><select name='newtinyMCE'>
-				<option value=\"5\"" . ($tinyMCE == 5 ? " selected" : "") . ">tinyMCE 6</option>
-				<option value=\"4\"" . ($tinyMCE == 4 ? " selected" : "") . ">tinyMCE 5</option>
-				<option value=\"3\"" . ($tinyMCE == 3 ? " selected" : "") . ">tinyMCE 4</option>
-				<option value=\"2\"" . ($tinyMCE == 2 ? " selected" : "") . ">tinyMCE 3</option>
-				<option value=\"1\"" . ($tinyMCE == 1 ? " selected" : "") . ">tinyMCE 2</option>
-				<option value=\"0\"" . (!$tinyMCE ? " selected" : "") . ">" . _NO . "</option>
+				<td><label for='newtinymce'>"._USETINYMCE. ": </label></td><td><select name='newtinymce'>
+				<option value=\"5\"" . ($tinymce == 5 ? " selected" : "") . ">tinyMCE 6</option>
+				<option value=\"4\"" . ($tinymce == 4 ? " selected" : "") . ">tinyMCE 5</option>
+				<option value=\"3\"" . ($tinymce == 3 ? " selected" : "") . ">tinyMCE 4</option>
+				<option value=\"2\"" . ($tinymce == 2 ? " selected" : "") . ">tinyMCE 3</option>
+				<option value=\"1\"" . ($tinymce == 1 ? " selected" : "") . ">tinyMCE 2</option>
+				<option value=\"0\"" . (!$tinymce ? " selected" : "") . ">" . _NO . "</option>
 				</select> <a href='#' class='pophelp'>[?]<span>"._HELP_TINYMCE." "._TINYMCENOTE."</span></a></td>
 			</tr>
 			<tr>

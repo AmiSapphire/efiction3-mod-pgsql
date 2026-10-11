@@ -72,7 +72,7 @@ else if (isset($_GET["form"]))
 			<tr><td>" . _AUTHOR . ": </td><td><INPUT  type=\"text\" class=\"textbox=\" name=\"author\" value=\"" . stripslashes($newsitem['author']) . "\"></td></tr>
 			<tr><td>" . _TITLE . ": </td><td><INPUT  type=\"text\" class=\"textbox=\" name=\"title\" value=\"" . stripslashes($newsitem['title']) . "\"></td></tr>
 			<tr><td>" . _TEXT . ": </td><td><textarea class=\"textbox\" name=\"story\" id=\"story\" COLS=\"45\" ROWS=\"6\">" . stripslashes($newsitem['story']) . "</TEXTAREA>";
-	if ($tinyMCE)
+	if ($tinymce)
 		$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('story');\" checked><label for='toggle'>" . _TINYMCETOGGLE . "</label></div>";
 
 	$output .= "</td></tr><tr><td colspan=\"2\" align=\"center\">" . ($_GET["form"] != "new" ? "<INPUT type=\"hidden\" name=\"nid\" value=\"" . $_GET['form'] . "\">" : "") . "<INPUT type=\"submit\" class=\"button\" name=\"submit\" value=\"" . _SUBMIT . "\"></td></tr></table></form>";
@@ -83,7 +83,7 @@ else
 	$count = dbquery("SELECT COUNT(nid) FROM " . TABLEPREFIX . "fanfiction_news");
 	list($numrows) = dbrow($count);
 
-	$result = dbquery("SELECT n.*, n.time as date, count(c.cid) as comments FROM " . TABLEPREFIX . "fanfiction_news as n LEFT JOIN " . TABLEPREFIX . "fanfiction_comments as c ON  n.nid = c.nid GROUP BY n.nid ORDER BY time DESC LIMIT $offset, $itemsperpage");
+	$result = dbquery("SELECT n.*, n.time as date, count(c.cid) as comments FROM " . TABLEPREFIX . "fanfiction_news as n LEFT JOIN " . TABLEPREFIX . "fanfiction_comments as c ON  n.nid = c.nid GROUP BY n.nid ORDER BY time DESC OFFSET $offset LIMIT $itemsperpage");
 	if (file_exists("$skindir/newsbox.tpl")) $news = new TemplatePower("$skindir/newsbox.tpl");
 	else $news = new TemplatePower("default_tpls/newsbox.tpl");
 	$news->prepare();

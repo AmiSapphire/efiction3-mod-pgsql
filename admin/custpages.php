@@ -27,7 +27,7 @@ if(!defined("_CHARSET")) exit( );
 
 	$output .= "<div id=\"pagetitle\">"._CUSTPAGES."</div>";
 if(isset($_GET['delete']) && isNumber($_GET['delete'])) {
-	$result = dbquery("DELETE FROM ".TABLEPREFIX."fanfiction_messages WHERE message_id = ".$_GET['delete']." LIMIT 1");
+	$result = dbquery("DELETE FROM ".TABLEPREFIX."fanfiction_messages WHERE message_id = ".$_GET['delete']."");
 	if($result) $output .= write_message(_ACTIONSUCCESSFUL);
 	else $output .= write_error(_ERROR);
 }
@@ -37,10 +37,10 @@ if(isset($_POST['submit'])) {
 		$pagename = descript($_POST['name']);
 		$pagetitle = descript($_POST['title']);
 		if(isset($_GET['edit']) && isNumber($_GET['edit'])) 
-			$result = dbquery("UPDATE ".TABLEPREFIX."fanfiction_messages SET message_name = '".escapestring($pagename)."', message_title = '".escapestring($pagetitle)."', message_text = '".escapestring(descript($_POST['text']))."' WHERE message_id = ".$_GET['edit']." LIMIT 1");
+			$result = dbquery("UPDATE ".TABLEPREFIX."fanfiction_messages SET message_name = '".escapestring($pagename)."', message_title = '".escapestring($pagetitle)."', message_text = '".escapestring(descript($_POST['text']))."' WHERE message_id = ".$_GET['edit']."");
 		else {
-			$result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_messages(`message_name`, `message_title`, `message_text`) VALUES( '".escapestring($pagename)."', '".escapestring($pagetitle)."', '".escapestring(descript($_POST['text']))."')");
-			if($result) $result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_pagelinks(`link_name`, `link_text`, `link_url`, `link_target`, `link_access`) VALUES('".escapestring($pagename)."_link', '".escapestring($pagetitle)."', 'viewpage.php?page=$pagename', '0', '0')");
+			$result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_messages(message_name, message_title, message_text) VALUES( '".escapestring($pagename)."', '".escapestring($pagetitle)."', '".escapestring(descript($_POST['text']))."')");
+			if($result) $result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_pagelinks(link_name, link_text, link_url, link_target, link_access) VALUES('".escapestring($pagename)."_link', '".escapestring($pagetitle)."', 'viewpage.php?page=$pagename', '0', '0')");
 		}
 		if($result) $output .= write_message(_ACTIONSUCCESSFUL."<br /><br /><a href='viewpage.php?page=$pagename'>$pagetitle</a>");
 		else $output .= write_error(_ERROR);
@@ -81,7 +81,7 @@ if((isset($_GET['edit']) && isNumber($_GET['edit'])) || isset($_GET["new"]) || i
 		<div><label for=\"title\">"._TITLE.":</label> <input type=\"text\" class=\"textbox\" name=\"title\" value=\"$title\" size=\"30\"></div>
 		<div><label for=\"text\">"._TEXT.":</label><br />
 		<textarea class=\"textbox\" rows=\"10\" cols=\"60\" style='width: 100%;' name=\"text\">$text</textarea>";
-	if($tinyMCE) 
+	if($tinymce)
 		$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('text');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 	$output .= "</div><INPUT type=\"submit\" class=\"button\" name=\"preview\" id=\"preview\" value=\""._PREVIEW."\"><INPUT type=\"submit\" class=\"button\" name=\"submit\" id=\"submit\" value=\""._SUBMIT."\"></form></div>";
 	$output .= write_message(_CUSTPAGENOTE);

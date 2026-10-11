@@ -66,7 +66,7 @@ if(!empty($_GET['edit'])) {
 				$code_out = isset($_POST['code_out']) ? descript($_POST['code_out']) : "";
 			}
 			if($new) {
-				$result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorfields(`field_name`, `field_title`, `field_type`, `field_options`, `field_code_in`, `field_code_out`, `field_on`) 
+				$result = dbquery("INSERT INTO ".TABLEPREFIX."fanfiction_authorfields(field_name, field_title, field_type, field_options, field_code_in, field_code_out, field_on)
 					VALUES('".escapestring($field_name)."', '".escapestring($field_title)."', '$field_type', '".escapestring($field_options)."', '".escapestring($code_in)."', '".escapestring($code_out)."', '$field_on');");
 			}
 			else {
@@ -95,7 +95,7 @@ if(!empty($_GET['edit'])) {
 		}
 		$output .= "</select> <A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_FIELDTYPE."</span></A><br />
 			<div id='opt_2'".($fieldinfo['field_type'] == 2 ? "" :"style='display: none;'")."><label for='options_2'>"._FIELDSELECT.":</label><A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_FIELDSELECT."</span></A><div style='margin-left: 30%; padding-left: 1em;'><textarea style='width: 100%; height: 150px;' name='options_2' cols='35' rows='4' class='mceNoEditor' id='options_2'>".($fieldinfo['field_type'] == 2 ? preg_replace("@\|#\|@", "\n", stripslashes($fieldinfo['field_options'])) : "")."</textarea></div>";
-				if($tinyMCE) 
+				if($tinymce)
 				$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('options_2');\"><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 		$output .= "</div>
 			<div id='opt_4'".($fieldinfo['field_type'] == 4 ? "" :"style='display: none;'")."><label for='options_4'>"._FIELDIDURL.":</label><input type='text' name='options_4' id='options_4' ".($fieldinfo['field_type'] == 4 ? "value='".stripslashes($fieldinfo['field_options'])."'" : "")."><A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_FIELDIDURL."</span></A></div>
