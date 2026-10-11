@@ -195,7 +195,7 @@ define("_HELP_DBNAME", "This should be the name of your database.  You should ha
 define("_HELP_DBUSER", "This is the user you (or your webhost) assigned to the database when it was created.");
 define("_HELP_DBPASS", "This is the password for the database user.");
 define("_HELP_INSTALL_SITEKEY", "The sitekey will be used to access the settings for your site.  It is also used to prevent crossed member logins when two or more sites are installed on the same domain.  You <strong>must</strong> have a <strong>unique</strong> sitekey for each eFiction site!  If you leave this blank, the script will randomly generate another one for you.");
-define("_HELP_SETTINGSPREFIX", "This allows you to define a separate prefix for the settings table.  This allows you to share the settings table among more than one eFiction site in the same database.");
+define("_HELP_SETTINGSPREFIX", "This allows you to define a separate prefix for the settings table.  This allows you to share the settings table among more than one eFiction site in the same database. In PostgreSQL, the schema name belongs here instead, with a period/full stop at the end, i.e. 'public.' . This also performs the same goal as its original MySQL implementation.");
 
 //  Missing LANs - fatal error  
 define("_EMAILREQUIRED", "Email is required");

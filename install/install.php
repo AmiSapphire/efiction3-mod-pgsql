@@ -198,11 +198,13 @@ switch ($_GET['step'])
 			else $fail =  write_message(_PASSWORDTWICE);
 			if (!isset($fail))
 			{
-				$result = dbquery("INSERT INTO " . $tableprefix . "fanfiction_authors(`penname`, `email`, `password`, `date`) VALUES('$penname', '" . $_POST['email'] . "', '$encryptpassword', '" . time() . "')");
-				define("USERUID", dbinsertid());
+				$result = dbquery("INSERT INTO " . $tableprefix . "fanfiction_authors(penname, email, password, date) VALUES('$penname', '" . $_POST['email'] . "', '$encryptpassword', '" . time() . "') RETURNING 'uid'");
+				// TODO Should check this in includes/pg_functions; sends uid_0
+				//define("USERUID", dbinsertid());
+				define("USERUID", intval($result));
 				$skinquery = dbquery("SELECT skin FROM " . $settingsprefix . "fanfiction_settings WHERE sitekey = '" . SITEKEY . "'");
 				list($skin) = dbrow($skinquery);
-				$result2 = dbquery("INSERT INTO " . $tableprefix . "fanfiction_authorprefs(`uid`, `userskin`, `level`) VALUES('" . USERUID . "', '$skin', '1')");
+				$result2 = dbquery("INSERT INTO " . $tableprefix . "fanfiction_authorprefs(uid, userskin, level) VALUES('" . USERUID . "', '$skin', '1')");
 				if ($result && $result2) $output .= write_message(_ACTIONSUCCESSFUL . "<br /><br />Installation complete!  <a href='../user.php?action=login'>Log in</a> to your site and go to the Admin area to configure your archive. <strong>Note:</strong> Please delete the install/ folder!");
 			}
 			else $output .= $fail;
@@ -256,7 +258,7 @@ switch ($_GET['step'])
 				$output .= "<table class='tblborder' style='margin: 1em auto; padding: 1em;' cellpadding='5'><tr><th>" . _FIELD . "</th><th>" . _RESULT . "</th></tr>";
 				foreach ($fields as $field)
 				{
-					$f = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_authorfields` (`field_type`, `field_name`, `field_title`, `field_options`, `field_code_in`, `field_code_out`, `field_on`) VALUES('" . $field[0] . "', '" . $field[1] . "','" . $field[2] . "','" . escapestring($field[3]) . "','" . escapestring($field[4]) . "','" . escapestring($field[5]) . "','" . $field[6] . "');");
+					$f = dbquery("INSERT INTO " . $tableprefix . "fanfiction_authorfields (field_type, field_name, field_title, field_options, field_code_in, field_code_out, field_on) VALUES('" . $field[0] . "', '" . $field[1] . "','" . $field[2] . "','" . escapestring($field[3]) . "','" . escapestring($field[4]) . "','" . escapestring($field[5]) . "','" . $field[6] . "');");
 					$output .= "<tr><td>" . $field[2] . "</td><td align='center'>" . ($f ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
 				}
 				$output .= "</table>";
@@ -276,23 +278,23 @@ switch ($_GET['step'])
 			if ($_GET['install'] == "automatic")
 			{
 				$output .= "<table class='tblborder' style='margin: 1em auto; padding: 1em;' cellpadding='5'><tr><th>" . _MESSAGE . "</th><th>" . _RESULT . "</th></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (1, 'welcome', '', 'This is your welcome message. It appears on the index page. Include it in your .tpl files with {welcome}.');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (1, 'welcome', '', 'This is your welcome message. It appears on the index page. Include it in your .tpl files with {welcome}.');");
 				$output .= "<tr><td>Welcome</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (2, 'copyright', '', 'This is your sample copyright footer.  Include it in your footer.tpl with <b>{footer}</b><br />\r\n<u>Disclaimer:</u>  All publicly recognizable characters, settings, etc. are the property of their respective owners.  The original characters and plot are the property of the author.  No money is being made from this work.  No copyright infringement is intended.\r\n');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (2, 'copyright', '', 'This is your sample copyright footer.  Include it in your footer.tpl with <b>{footer}</b><br />\r\n<u>Disclaimer:</u>  All publicly recognizable characters, settings, etc. are the property of their respective owners.  The original characters and plot are the property of the author.  No money is being made from this work.  No copyright infringement is intended.\r\n');");
 				$output .= "<tr><td>Copyright</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (3, 'help', 'Help', '<h3>FAQ</h3><p><strong>I forgot my password!&nbsp; What do I do now?</strong></p><p>To recover a lost password, <a href=\"user.php?action=lostpassword\">click here</a> and enter the e-mail address with which you registered.&nbsp; Your password will be sent to you shortly.</p><p><strong>What kinds of stories are allowed?</strong></p><p>See our <a href=\"submission.php\">Submission Rules.</a></p><p><strong>How do I contact the site administrators?</strong></p><p>You can e-mail us via our <a href=\"contact.php\">contact form.</a></p><p><strong>How do I submit stories?</strong></p><p>If you have not already done so, please <a href=\"user.php?action=newaccount\">register for an account</a>. Once you\'ve logged in, click on <a href=\"user.php\">Account Information</a> and choose <a href=\"stories.php?action=newstory\">Add Story</a>.&nbsp; The form presented there will allow you to submit your story.</p><p><strong>What are the ratings used on the site?</strong></p><p>We use the ratings system from <a href=\"http://www.fictionratings.com/\">www.fictionratings.com</a>.</p><p><strong>What are the story classifications?</strong></p><p>Stories are classified by categories, genres, and warnings.</p>');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (3, 'help', 'Help', '<h3>FAQ</h3><p><strong>I forgot my password!&nbsp; What do I do now?</strong></p><p>To recover a lost password, <a href=\"user.php?action=lostpassword\">click here</a> and enter the e-mail address with which you registered.&nbsp; Your password will be sent to you shortly.</p><p><strong>What kinds of stories are allowed?</strong></p><p>See our <a href=\"submission.php\">Submission Rules.</a></p><p><strong>How do I contact the site administrators?</strong></p><p>You can e-mail us via our <a href=\"contact.php\">contact form.</a></p><p><strong>How do I submit stories?</strong></p><p>If you have not already done so, please <a href=\"user.php?action=newaccount\">register for an account</a>. Once you\'ve logged in, click on <a href=\"user.php\">Account Information</a> and choose <a href=\"stories.php?action=newstory\">Add Story</a>.&nbsp; The form presented there will allow you to submit your story.</p><p><strong>What are the ratings used on the site?</strong></p><p>We use the ratings system from <a href=\"http://www.fictionratings.com/\">www.fictionratings.com</a>.</p><p><strong>What are the story classifications?</strong></p><p>Stories are classified by categories, genres, and warnings.</p>');");
 				$output .= "<tr><td>Help</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (4, 'nothankyou', 'Submission Rejection', 'Your recent submission of \"{storytitle} : {chaptertitle}\" to {sitename} did not meet our requirements for submission.  Please review our {rules}.<br /><br />\r\n\r\n{adminname}');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (4, 'nothankyou', 'Submission Rejection', 'Your recent submission of \"{storytitle} : {chaptertitle}\" to {sitename} did not meet our requirements for submission.  Please review our {rules}.<br /><br />\r\n\r\n{adminname}');");
 				$output .= "<tr><td>Rejection Letter</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (5, 'printercopyright', '', '<u>Disclaimer:</u> All publicly recognizable characters and settings are the property of their respective owners. The original characters and plot are the property of the author. No money is being made from this work. No copyright infringement is intended.');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (5, 'printercopyright', '', '<u>Disclaimer:</u> All publicly recognizable characters and settings are the property of their respective owners. The original characters and plot are the property of the author. No money is being made from this work. No copyright infringement is intended.');");
 				$output .= "<tr><td>Printable Copyright</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (6, 'rules', 'Submission Rules', '<p align=\"center\"><strong>Submission Rules</strong></p>\r\n<ol>\r\n  <li>All submissions must be accompanied by a complete disclaimer. If a \r\n  suitable disclaimer is not included, the site administrators reserve the right \r\n  to add a disclaimer.&nbsp; Repeat offenders may be subject to further action \r\n  up to and including removal of stories and account.\r\n<div class=\"tblborder\" style=\"width: 400px; margin: 1em auto;\">\r\n<div style=\"background: #000; color: #FFF; padding: 5px; text-align: center; font-weight: bold;\">Sample Disclaimer</div>\r\n<div class=\"tblborder\" style=\"padding: 5px;\"><span style=\"text-decoration: underline;\">Disclaimer:</span>  All publicly recognizable characters, settings, etc. are the property of their respective owners.  The original characters and plot are the property of the author.&nbsp; \r\n        The author is in no way associated with the owners, creators, or producers of any media franchise.&nbsp;  No copyright infringement is intended.</div>\r\n  </div>\r\n  </li>\r\n  <li>Stories must be submitted to the proper category. &nbsp;If there is an appropriate sub-category, <strong>DO NOT</strong> add your story to the main category.&nbsp; The submission \r\n  form allows you to choose multiple categories for your story, and we worked very hard to add that functionality for you.&nbsp;&nbsp; <u><strong>So please \r\n  do NOT add your story multiple times!</strong></u></li>\r\n  <li>Titles and summaries must be kid friendly.&nbsp; No exceptions.&nbsp; </li>\r\n  <li>&quot;Please read&quot;, &quot;Untitled&quot;, etc. are not acceptable titles or summaries.</li>\r\n  <li>A number of authors have requested that fans refrain from writing fan \r\n  fiction based on their work.&nbsp; Therefore submissions will not be \r\n  accepted based on the works of P.N. Elrod, Raymond Feist, Terry Goodkind, \r\n  Laurell K. Hamilton, Anne McCaffrey, Robin McKinley, Irene Radford, Anne Rice, \r\n  and Nora Roberts/J.D. Robb.&nbsp; </li>\r\n  <li>Actor/actress stories are not permitted...not even if they\'re visiting an \r\n  alternate reality.</li>\r\n  <li>Correct grammar and spelling are expected of all stories submitted to this \r\n  site.&nbsp; The site administrators are not grammar Nazis.&nbsp; However, the \r\n  site administrators reserve the right to request corrections in submissions \r\n  with a multitude of grammar and/or spelling errors.&nbsp; If such a request is \r\n  ignored, the story will be deleted.</li>\r\n  <li>All stories must be rated correctly and have the appropriate warnings.&nbsp; \r\n  All adult rated stories are expected to have warnings.&nbsp; After all, they \r\n  wouldn\'t have that rating if there wasn\'t something to be warned about!&nbsp; The site administrators recognize \r\n  that there is an audience for these stories, but please respect those who do \r\n  not wish to read them by labeling them appropriately.&nbsp;\r\n  <u><strong>Please note: Stories containing adults having sex with minors are strictly forbidden.</strong></u>&nbsp; </li>\r\n  <li>Stories with multiple chapters should be archived as such and <span style=\"font-weight: bold; text-decoration: underline;\">NEVER</span> as \r\n  separate stories.&nbsp; Upload the first chapter of your story, then go to <a href=\"stories.php?action=viewstories\">Manage Stories</a> in \r\nyour account to add additional chapters.  If you have trouble with this, please contact the site administrator or ask a \r\n  friend to help you.</li>\r\n  <li>As much as possible, spoiler warnings are expected on all stories.  For categories with serialized content, such as series of books or television series, \r\n  spoilers are <strong>mandatory</strong> for the current season and/or most recent part.  An appropriate spoiler warning to place in your summary would be: Spoilers for <u>Star Trek II: The Wrath of Khan.</u> \r\n  <strong>DO NOT</strong> do anything like this: <u>Spoilers for the one where Spock dies.</u></li>\r\n</ol>\r\n  <p>Submissions found to be in violation of these rules may be removed and the \r\n  author\'s account suspended at the discretion of the site administrators and/or \r\n  moderators.&nbsp; The site administrators reserve the right to modify these \r\n  rules as needed.</p>');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (6, 'rules', 'Submission Rules', '<p align=\"center\"><strong>Submission Rules</strong></p>\r\n<ol>\r\n  <li>All submissions must be accompanied by a complete disclaimer. If a \r\n  suitable disclaimer is not included, the site administrators reserve the right \r\n  to add a disclaimer.&nbsp; Repeat offenders may be subject to further action \r\n  up to and including removal of stories and account.\r\n<div class=\"tblborder\" style=\"width: 400px; margin: 1em auto;\">\r\n<div style=\"background: #000; color: #FFF; padding: 5px; text-align: center; font-weight: bold;\">Sample Disclaimer</div>\r\n<div class=\"tblborder\" style=\"padding: 5px;\"><span style=\"text-decoration: underline;\">Disclaimer:</span>  All publicly recognizable characters, settings, etc. are the property of their respective owners.  The original characters and plot are the property of the author.&nbsp; \r\n        The author is in no way associated with the owners, creators, or producers of any media franchise.&nbsp;  No copyright infringement is intended.</div>\r\n  </div>\r\n  </li>\r\n  <li>Stories must be submitted to the proper category. &nbsp;If there is an appropriate sub-category, <strong>DO NOT</strong> add your story to the main category.&nbsp; The submission \r\n  form allows you to choose multiple categories for your story, and we worked very hard to add that functionality for you.&nbsp;&nbsp; <u><strong>So please \r\n  do NOT add your story multiple times!</strong></u></li>\r\n  <li>Titles and summaries must be kid friendly.&nbsp; No exceptions.&nbsp; </li>\r\n  <li>&quot;Please read&quot;, &quot;Untitled&quot;, etc. are not acceptable titles or summaries.</li>\r\n  <li>A number of authors have requested that fans refrain from writing fan \r\n  fiction based on their work.&nbsp; Therefore submissions will not be \r\n  accepted based on the works of P.N. Elrod, Raymond Feist, Terry Goodkind, \r\n  Laurell K. Hamilton, Anne McCaffrey, Robin McKinley, Irene Radford, Anne Rice, \r\n  and Nora Roberts/J.D. Robb.&nbsp; </li>\r\n  <li>Actor/actress stories are not permitted...not even if they\'re visiting an \r\n  alternate reality.</li>\r\n  <li>Correct grammar and spelling are expected of all stories submitted to this \r\n  site.&nbsp; The site administrators are not grammar Nazis.&nbsp; However, the \r\n  site administrators reserve the right to request corrections in submissions \r\n  with a multitude of grammar and/or spelling errors.&nbsp; If such a request is \r\n  ignored, the story will be deleted.</li>\r\n  <li>All stories must be rated correctly and have the appropriate warnings.&nbsp; \r\n  All adult rated stories are expected to have warnings.&nbsp; After all, they \r\n  wouldn\'t have that rating if there wasn\'t something to be warned about!&nbsp; The site administrators recognize \r\n  that there is an audience for these stories, but please respect those who do \r\n  not wish to read them by labeling them appropriately.&nbsp;\r\n  <u><strong>Please note: Stories containing adults having sex with minors are strictly forbidden.</strong></u>&nbsp; </li>\r\n  <li>Stories with multiple chapters should be archived as such and <span style=\"font-weight: bold; text-decoration: underline;\">NEVER</span> as \r\n  separate stories.&nbsp; Upload the first chapter of your story, then go to <a href=\"stories.php?action=viewstories\">Manage Stories</a> in \r\nyour account to add additional chapters.  If you have trouble with this, please contact the site administrator or ask a \r\n  friend to help you.</li>\r\n  <li>As much as possible, spoiler warnings are expected on all stories.  For categories with serialized content, such as series of books or television series, \r\n  spoilers are <strong>mandatory</strong> for the current season and/or most recent part.  An appropriate spoiler warning to place in your summary would be: Spoilers for <u>Star Trek II: The Wrath of Khan.</u> \r\n  <strong>DO NOT</strong> do anything like this: <u>Spoilers for the one where Spock dies.</u></li>\r\n</ol>\r\n  <p>Submissions found to be in violation of these rules may be removed and the \r\n  author\'s account suspended at the discretion of the site administrators and/or \r\n  moderators.&nbsp; The site administrators reserve the right to modify these \r\n  rules as needed.</p>');");
 				$output .= "<tr><td>Submission Rules</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (7, 'thankyou', '{sitename} Submission Acceptance', 'Thanks for your submission.');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (7, 'thankyou', '{sitename} Submission Acceptance', 'Thanks for your submission.');");
 				$output .= "<tr><td>Acceptance Letter</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (8, 'tos', 'Terms of Service', 'This is the Terms of Service for your site.  It will be displayed when a new member registers to the site.');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (8, 'tos', 'Terms of Service', 'This is the Terms of Service for your site.  It will be displayed when a new member registers to the site.');");
 				$output .= "<tr><td>Terms of Service</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$msg = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_messages` VALUES (9, 'maintenance', 'Site Maintenance', '<p style=\"text-align: center;\">This site is currently undergoing maintenance.  Please check back soon.  Thank you.</p>');");
+				$msg = dbquery("INSERT INTO " . $tableprefix . "fanfiction_messages VALUES (9, 'maintenance', 'Site Maintenance', '<p style=\"text-align: center;\">This site is currently undergoing maintenance.  Please check back soon.  Thank you.</p>');");
 				$output .= "<tr><td>Site Maintenance</td><td align='center'>" . ($msg ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
 				$output .= "</table>";
 				$output .= write_message(_MESSAGEAUTOFAILUPGRADE . "<br /><br /> <a href='install.php?step=8'>" . _CONTINUE . "</a>");
@@ -325,7 +327,7 @@ switch ($_GET['step'])
 				$output .= "<table class='tblborder' style='margin: 1em auto; padding: 1em;' cellpadding='5'><tr><th>" . _BLOCK . "</th><th>" . _RESULT . "</th></tr>";
 				foreach ($blocklist as $block)
 				{
-					$b = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_blocks` (`block_name`, `block_title`, `block_file`, `block_status`, `block_variables`) VALUES('" . $block[0] . "', '" . $block[1] . "', '" . $block[2] . "', '" . $block[3] . "', '" . escapestring($block[4]) . "');");
+					$b = dbquery("INSERT INTO " . $tableprefix . "fanfiction_blocks (block_name, block_title, block_file, block_status, block_variables) VALUES('" . $block[0] . "', '" . $block[1] . "', '" . $block[2] . "', '" . $block[3] . "', '" . escapestring($block[4]) . "');");
 					$output .= "<tr><td>" . $block[1] . "</td><td align='center'>" . ($b ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
 				}
 				$output .= "</table>";
@@ -375,7 +377,7 @@ switch ($_GET['step'])
 				$output .= "<table class='tblborder' style='margin: 1em auto; padding: 1em;' cellpadding='5'><tr><th>" . _PAGE . "</th><th>" . _RESULT . "</th></tr>";
 				foreach ($pagelist as $page)
 				{
-					$pages = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_pagelinks` (`link_name`, `link_text`, `link_url`, `link_target`, `link_access`) VALUES ('" . $page[0] . "', '" . $page[1] . "', '" . $page[2] . "', '" . $page[3] . "', '" . $page[4] . "');");
+					$pages = dbquery("INSERT INTO " . $tableprefix . "fanfiction_pagelinks (link_name, link_text, link_url, link_target, link_access) VALUES ('" . $page[0] . "', '" . $page[1] . "', '" . $page[2] . "', '" . $page[3] . "', '" . $page[4] . "');");
 					$output .= "<tr><td>" . stripslashes($page[1]) . "</td><td align='center'>" . ($pages ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
 				}
 
@@ -480,7 +482,7 @@ switch ($_GET['step'])
 				foreach ($panellist as $panel)
 				{
 					unset($panels);
-					$panels = dbquery("INSERT INTO `" . $tableprefix . "fanfiction_panels` (`panel_name`, `panel_title`, `panel_url`, `panel_level`, `panel_order`, `panel_hidden`, `panel_type`) VALUES ('" . $panel[0] . "', '" . $panel[1] . "', '" . $panel[2] . "', '" . $panel[3] . "', '" . $panel[4] . "', '" . $panel[5] . "', '" . $panel[6] . "');");
+					$panels = dbquery("INSERT INTO " . $tableprefix . "fanfiction_panels (panel_name, panel_title, panel_url, panel_level, panel_order, panel_hidden, panel_type) VALUES ('" . $panel[0] . "', '" . $panel[1] . "', '" . $panel[2] . "', '" . $panel[3] . "', '" . $panel[4] . "', '" . $panel[5] . "', '" . $panel[6] . "');");
 					$output .= "<tr><td>" . stripslashes($panel[1]) . "</td><td align='center'>" . ($panels ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
 				}
 				$output .= "</table>";
@@ -500,336 +502,336 @@ switch ($_GET['step'])
 			if ($_GET['install'] == "automatic")
 			{
 				$output .= "<table class='tblborder' style='margin: 1em auto; padding: 1em;' cellpadding='5'><tr><th>Table</th><th>" . _RESULT . "</th></tr>";
-				$authorfields = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_authorfields` (
-  `field_id` int(11) NOT NULL AUTO_INCREMENT,
-  `field_type` tinyint(4) NOT NULL default '0',
-  `field_name` varchar(30) NOT NULL default ' ',
-  `field_title` varchar(255) NOT NULL default ' ',
-  `field_options` text,
-  `field_code_in` text,
-  `field_code_out` text,
-  `field_on` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$authorfields = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_authorfields (
+  field_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  field_type SMALLINT NOT NULL default '0',
+  field_name VARCHAR(30) NOT NULL default ' ',
+  field_title VARCHAR(255) NOT NULL default ' ',
+  field_options TEXT,
+  field_code_in TEXT,
+  field_code_out TEXT,
+  field_on SMALLINT NOT NULL default '0',
+  PRIMARY KEY  (field_id)
+);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_authorfields</td><td align='center'>" . ($authorfields ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$authorinfo = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_authorinfo` (
-  `uid` int(11) NOT NULL default '0',
-  `field` int(11) NOT NULL default '0',
-  `info` varchar(255) NOT NULL default ' ',
-  PRIMARY KEY  (`uid`,`field`),
-  KEY `uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$authorinfo = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_authorinfo (
+  uid INTEGER NOT NULL default '0',
+  field INTEGER NOT NULL default '0',
+  info VARCHAR(255) NOT NULL default ' ',
+  PRIMARY KEY  (uid,field)
+);
+				CREATE INDEX IF NOT EXISTS uid ON " . $tableprefix . "fanfiction_authorinfo (uid);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_authorinfo</td><td align='center'>" . ($authorinfo ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$authorprefs = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_authorprefs` (
-  `uid` int(11) NOT NULL default '0',
-  `newreviews` tinyint(1) NOT NULL default '0',
-  `newrespond` tinyint(1) NOT NULL default '0',
-  `ageconsent` tinyint(1) NOT NULL default '0',
-  `alertson` tinyint(1) NOT NULL default '0',
-  `tinyMCE` tinyint(1) NOT NULL default '0',
-  `sortby` tinyint(1) NOT NULL default '0',
-  `storyindex` tinyint(1) NOT NULL default '0',
-  `validated` tinyint(1) NOT NULL default '0',
-  `userskin` varchar(60) NOT NULL default 'default',
-  `level` tinyint(1) NOT NULL default '0',
-  `categories` varchar(200) NOT NULL default '0',
-  `contact` tinyint(1) NOT NULL default '0',
-  `stories` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$authorprefs = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_authorprefs (
+  uid INTEGER NOT NULL default '0',
+  newreviews SMALLINT NOT NULL default '0',
+  newrespond SMALLINT NOT NULL default '0',
+  ageconsent SMALLINT NOT NULL default '0',
+  alertson SMALLINT NOT NULL default '0',
+  tinymce SMALLINT NOT NULL default '0',
+  sortby SMALLINT NOT NULL default '0',
+  storyindex SMALLINT NOT NULL default '0',
+  validated SMALLINT NOT NULL default '0',
+  userskin VARCHAR(60) NOT NULL default 'default',
+  level SMALLINT NOT NULL default '0',
+  categories VARCHAR(200) NOT NULL default '0',
+  contact SMALLINT NOT NULL default '0',
+  stories INTEGER NOT NULL default '0',
+  PRIMARY KEY  (uid)
+);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_authorprefs</td><td align='center'>" . ($authorprefs ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$authors = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_authors` (
-  `uid` int(11) NOT NULL auto_increment,
-  `penname` varchar(200) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  `realname` varchar(200) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  `email` varchar(200) NOT NULL default '',
-  `bio` text NULL,
-  `image` varchar(200) NOT NULL default '',
-  `date` int(10) unsigned NOT NULL default '0',
-  `admincreated` char(1) NOT NULL default '0',
-  `password` varchar(255) NOT NULL default '0',
-  PRIMARY KEY  (`uid`),
-  KEY `penname` (`penname`),
-  KEY `admincreated` (`admincreated`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$authors = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_authors (
+  uid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  penname VARCHAR(200) NOT NULL default '',
+  realname VARCHAR(200) NOT NULL default '',
+  email VARCHAR(200) NOT NULL default '',
+  bio TEXT NULL,
+  image VARCHAR(200) NOT NULL default '',
+  date CHAR(10) NOT NULL default '0',
+  admincreated SMALLINT NOT NULL default '0',
+  password VARCHAR(255) NOT NULL default '0',
+  PRIMARY KEY  (uid)
+);
+				CREATE INDEX IF NOT EXISTS penname ON " . $tableprefix . "fanfiction_authors (penname);
+				CREATE INDEX IF NOT EXISTS admincreated ON " . $tableprefix . "fanfiction_authors (admincreated);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_authors</td><td align='center'>" . ($authors ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$blocks = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_blocks` (
-  `block_id` int(11) NOT NULL auto_increment,
-  `block_name` varchar(30) NOT NULL default '',
-  `block_title` varchar(150) NOT NULL default '',
-  `block_file` varchar(200) NOT NULL default '',
-  `block_status` tinyint(1) NOT NULL default '0',
-  `block_variables` text NOT NULL,
-  PRIMARY KEY  (`block_id`),
-  KEY `block_name` (`block_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$blocks = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_blocks (
+  block_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  block_name VARCHAR(30) NOT NULL default '',
+  block_title VARCHAR(150) NOT NULL default '',
+  block_file VARCHAR(200) NOT NULL default '',
+  block_status SMALLINT NOT NULL default '0',
+  block_variables TEXT NOT NULL,
+  PRIMARY KEY  (block_id)
+);
+				CREATE INDEX IF NOT EXISTS block_name ON " . $tableprefix . "fanfiction_blocks (block_name);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_blocks</td><td align='center'>" . ($blocks ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$categories = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_categories` (
-  `catid` int(11) NOT NULL auto_increment,
-  `parentcatid` int(11) NOT NULL default '-1',
-  `category` varchar(60) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  `description` text NOT NULL,
-  `image` varchar(100) NOT NULL default '',
-  `locked` char(1) NOT NULL default '0',
-  `leveldown` tinyint(4) NOT NULL default '0',
-  `displayorder` int(11) NOT NULL default '0',
-  `numitems` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`catid`),
-  KEY `byparent` (`parentcatid`,`displayorder`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$categories = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_categories (
+  catid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  parentcatid INTEGER NOT NULL default '-1',
+  category VARCHAR(60) NOT NULL default '',
+  description TEXT NOT NULL,
+  image VARCHAR(100) NOT NULL default '',
+  locked SMALLINT NOT NULL default '0',
+  leveldown SMALLINT NOT NULL default '0',
+  displayorder INTEGER NOT NULL default '0',
+  numitems INTEGER NOT NULL default '0',
+  PRIMARY KEY  (catid)
+);
+				CREATE INDEX IF NOT EXISTS byparent ON " . $tableprefix . "fanfiction_categories (parentcatid,displayorder);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_categories</td><td align='center'>" . ($categories ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$chapters = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_chapters` (
-  `chapid` int(11) NOT NULL auto_increment,
-  `title` varchar(250) NOT NULL default '',
-  `inorder` int(11) NOT NULL default '0',
-  `notes` text NULL,
-  `storytext` text NULL,
-  `endnotes` text NULL,
-  `validated` char(1) NOT NULL default '0',
-  `wordcount` int(11) NOT NULL default '0',
-  `rating` tinyint(4) NOT NULL default '0',
-  `reviews` smallint(6) NOT NULL default '0',
-  `sid` int(11) NOT NULL default '0',
-  `uid` int(11) NOT NULL default '0',
-  `count` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`chapid`),
-  KEY `sid` (`sid`),
-  KEY `uid` (`uid`),
-  KEY `inorder` (`inorder`),
-  KEY `title` (`title`),
-  KEY `validated` (`validated`),
-  KEY `forstoryblock` (`sid`,`validated`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$chapters = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_chapters (
+  chapid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  title VARCHAR(250) NOT NULL default '',
+  inorder INTEGER NOT NULL default '0',
+  notes TEXT NULL,
+  storytext TEXT NULL,
+  endnotes TEXT NULL,
+  validated SMALLINT NOT NULL default '0',
+  wordcount INTEGER NOT NULL default '0',
+  rating SMALLINT NOT NULL default '0',
+  reviews INTEGER NOT NULL default '0',
+  sid INTEGER NOT NULL default '0',
+  uid INTEGER NOT NULL default '0',
+  count INTEGER NOT NULL default '0',
+  PRIMARY KEY  (chapid)
+);
+				CREATE INDEX IF NOT EXISTS sid ON " . $tableprefix . "fanfiction_chapters (sid);
+				CREATE INDEX IF NOT EXISTS uid ON " . $tableprefix . "fanfiction_chapters (uid);
+				CREATE INDEX IF NOT EXISTS inorder ON " . $tableprefix . "fanfiction_chapters (inorder);
+				CREATE INDEX IF NOT EXISTS title ON " . $tableprefix . "fanfiction_chapters (title);
+				CREATE INDEX IF NOT EXISTS validated ON " . $tableprefix . "fanfiction_chapters (validated);
+				CREATE INDEX IF NOT EXISTS forstoryblock ON " . $tableprefix . "fanfiction_chapters (sid,validated);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_chapters</td><td align='center'>" . ($chapters ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$characters = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_characters` (
-  `charid` int(11) NOT NULL auto_increment,
-  `catid` int(11) NOT NULL default '0',
-  `charname` varchar(60) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  `bio` text NOT NULL,
-  `image` varchar(200) NOT NULL default '',
-  PRIMARY KEY  (`charid`),
-  KEY `catid` (`catid`),
-  KEY `charname` (`charname`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$characters = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_characters (
+  charid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  catid INTEGER NOT NULL default '0',
+  charname VARCHAR(60) NOT NULL default '',
+  bio TEXT NOT NULL,
+  image VARCHAR(200) NOT NULL default '',
+  PRIMARY KEY  (charid)
+);
+				CREATE INDEX IF NOT EXISTS catid ON " . $tableprefix . "fanfiction_characters (catid);
+				CREATE INDEX IF NOT EXISTS charname ON " . $tableprefix . "fanfiction_characters (charname);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_characters</td><td align='center'>" . ($characters ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$classes = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_classes` (
-  `class_id` int(11) NOT NULL auto_increment,
-  `class_type` int(11) NOT NULL default '0',
-  `class_name` varchar(100) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  PRIMARY KEY  (`class_id`),
-  KEY `byname` (`class_type`,`class_name`,`class_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$classes = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_classes (
+  class_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  class_type INTEGER NOT NULL default '0',
+  class_name VARCHAR(100) NOT NULL default '',
+  PRIMARY KEY  (class_id)
+);
+				CREATE INDEX IF NOT EXISTS byname ON " . $tableprefix . "fanfiction_classes  (class_type,class_name,class_id)");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_classes</td><td align='center'>" . ($classes ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$classtypes = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_classtypes` (
-  `classtype_id` int(11) NOT NULL auto_increment,
-  `classtype_name` varchar(50) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  `classtype_title` varchar(50) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  PRIMARY KEY  (`classtype_id`),
-  UNIQUE KEY `classtype_name` (`classtype_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$classtypes = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_classtypes (
+  classtype_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  classtype_name VARCHAR(50) NOT NULL default '',
+  classtype_title VARCHAR(50) NOT NULL default '',
+  PRIMARY KEY  (classtype_id)
+);
+				CREATE UNIQUE INDEX IF NOT EXISTS classtype_name ON " . $tableprefix . "fanfiction_classtypes (classtype_name);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_classtypes</td><td align='center'>" . ($classtypes ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$coauthors = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_coauthors` (
-  `sid` int(11) NOT NULL default '0',
-  `uid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`sid`,`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$coauthors = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_coauthors (
+  sid INTEGER NOT NULL default '0',
+  uid INTEGER NOT NULL default '0',
+  PRIMARY KEY  (sid,uid)
+);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_coauthors</td><td align='center'>" . ($coauthors ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$codeblocks = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_codeblocks` (
-  `code_id` int(11) NOT NULL auto_increment,
-  `code_text` text NOT NULL,
-  `code_type` varchar(20) default NULL,
-  `code_module` varchar(60) default NULL,
-  PRIMARY KEY  (`code_id`),
-  KEY `code_type` (`code_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$codeblocks = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_codeblocks (
+  code_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  code_text TEXT NOT NULL,
+  code_type VARCHAR(20) default NULL,
+  code_module VARCHAR(60) default NULL,
+  PRIMARY KEY  (code_id)
+);
+				CREATE INDEX IF NOT EXISTS code_type ON " . $tableprefix . "fanfiction_codeblocks (code_type);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_codeblocks</td><td align='center'>" . ($codeblocks ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$comments = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_comments` (
-  `cid` int(11) NOT NULL auto_increment,
-  `nid` int(11) NOT NULL default '0',
-  `uid` int(11) NOT NULL default '0',
-  `comment` text NOT NULL,
-  `time` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`cid`),
-  KEY `commentlist` (`nid`,`time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$comments = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_comments (
+  cid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  nid INTEGER NOT NULL default '0',
+  uid INTEGER NOT NULL default '0',
+  comment text NOT NULL,
+  time CHAR(10) NOT NULL default '0',
+  PRIMARY KEY  (cid)
+);
+				CREATE INDEX IF NOT EXISTS commentlist ON " . $tableprefix . "fanfiction_comments (nid,time);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_comments</td><td align='center'>" . ($comments ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$favorites = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_favorites` (
-  `uid` int(11) NOT NULL default '0',
-  `item` int(11) NOT NULL default '0',
-  `type` char(2) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  `comments` text NOT NULL,
-  UNIQUE KEY `byitem` (`item`,`type`,`uid`),
-  UNIQUE KEY `byuid` (`uid`,`type`,`item`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$favorites = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_favorites (
+  uid INTEGER NOT NULL default '0',
+  item INTEGER NOT NULL default '0',
+  type CHAR(2) NOT NULL default '',
+  comments TEXT NOT NULL
+);
+				CREATE UNIQUE INDEX IF NOT EXISTS byitem ON " . $tableprefix . "fanfiction_favorites (item,type,uid);
+				CREATE UNIQUE INDEX IF NOT EXISTS byuid ON " . $tableprefix . "fanfiction_favorites (uid,type,item);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_favorites</td><td align='center'>" . ($favorites ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$inseries = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_inseries` (
-  `seriesid` int(11) NOT NULL default '0',
-  `sid` int(11) NOT NULL default '0',
-  `subseriesid` int(11) NOT NULL default '0',
-  `confirmed` int(11) NOT NULL default '0',
-  `inorder` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`sid`,`seriesid`, `subseriesid`),
-  KEY `seriesid` (`seriesid`,`inorder`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$inseries = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_inseries (
+  seriesid INTEGER NOT NULL default '0',
+  sid INTEGER NOT NULL default '0',
+  subseriesid INTEGER NOT NULL default '0',
+  confirmed INTEGER NOT NULL default '0',
+  inorder INTEGER NOT NULL default '0',
+  PRIMARY KEY  (sid,seriesid,subseriesid)
+);
+				CREATE INDEX IF NOT EXISTS seriesid ON " . $tableprefix . "fanfiction_inseries (seriesid,inorder);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_inseries</td><td align='center'>" . ($inseries ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$logs = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_log` (
-  `log_id` int(11) NOT NULL auto_increment,
-  `log_action` varchar(255) default NULL,
-  `log_uid` int(11) NOT NULL,
-  `log_ip` varbinary(16) DEFAULT NULL,
-  `log_timestamp` int(10) unsigned NOT NULL default '0',
-  `log_type` varchar(2) NOT NULL,
-  PRIMARY KEY  (`log_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$logs = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_log (
+  log_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  log_action VARCHAR(255) default NULL,
+  log_uid INTEGER NOT NULL,
+  log_ip BYTEA DEFAULT NULL,
+  log_timestamp CHAR(10) NOT NULL default '0',
+  log_type VARCHAR(2) NOT NULL,
+  PRIMARY KEY  (log_id)
+);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_log</td><td align='center'>" . ($logs ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$messages = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_messages` (
-  `message_id` int(11) NOT NULL auto_increment,
-  `message_name` varchar(50) NOT NULL default '',
-  `message_title` varchar(200) NOT NULL default '',
-  `message_text` text NOT NULL,
-  PRIMARY KEY  (`message_id`),
-  KEY `message_name` (`message_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$messages = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_messages (
+  message_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  message_name VARCHAR(50) NOT NULL default '',
+  message_title VARCHAR(200) NOT NULL default '',
+  message_text TEXT NOT NULL,
+  PRIMARY KEY  (message_id)
+);
+				CREATE INDEX IF NOT EXISTS message_name ON " . $tableprefix . "fanfiction_messages (message_name);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_messages</td><td align='center'>" . ($messages ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$modules = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_modules` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default 'Test Module',
-  `version` varchar(10) NOT NULL default '1.0',
-  PRIMARY KEY  (`id`),
-  KEY `name_version` (`name`,`version`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$modules = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_modules (
+  id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  name VARCHAR(100) NOT NULL default 'Test Module',
+  version VARCHAR(10) NOT NULL default '1.0',
+  PRIMARY KEY  (id)
+);
+				CREATE INDEX IF NOT EXISTS name_version ON " . $tableprefix . "fanfiction_modules (name,version);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_modules</td><td align='center'>" . ($modules ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$news = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_news` (
-  `nid` int(11) NOT NULL auto_increment,
-  `author` varchar(60) NOT NULL default '',
-  `title` varchar(255) NOT NULL default '',
-  `story` text NOT NULL,
-  `time` int(10) unsigned NOT NULL default '0',
-  `comments` INT NOT NULL DEFAULT '0',
-  PRIMARY KEY  (`nid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$news = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_news (
+  nid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  author VARCHAR(60) NOT NULL default '',
+  title VARCHAR(255) NOT NULL default '',
+  story TEXT NOT NULL,
+  time CHAR(10) NOT NULL default '0',
+  comments INT NOT NULL DEFAULT '0',
+  PRIMARY KEY  (nid)
+);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_news</td><td align='center'>" . ($news ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$pagelinks = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_pagelinks` (
-  `link_id` int(11) NOT NULL auto_increment,
-  `link_name` varchar(50) NOT NULL default '',
-  `link_text` varchar(100) NOT NULL default '',
-  `link_key` CHAR( 1 ) NULL,
-  `link_url` varchar(250) NOT NULL default '',
-  `link_target` char(1) NOT NULL default '0',
-  `link_access` tinyint(4) NOT NULL default '0',
-  PRIMARY KEY  (`link_id`),
-  KEY `link_name` (`link_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$pagelinks = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_pagelinks (
+  link_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  link_name VARCHAR(50) NOT NULL default '',
+  link_text VARCHAR(100) NOT NULL default '',
+  link_key CHAR( 1 ) NULL,
+  link_url VARCHAR(250) NOT NULL default '',
+  link_target CHAR(1) NOT NULL default '0',
+  link_access SMALLINT NOT NULL default '0',
+  PRIMARY KEY  (link_id)
+);
+				CREATE INDEX IF NOT EXISTS link_name ON " . $tableprefix . "fanfiction_pagelinks (link_name);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_pagelinks</td><td align='center'>" . ($pagelinks ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$panels = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_panels` (
-  `panel_id` int(11) NOT NULL auto_increment,
-  `panel_name` varchar(50) NOT NULL default 'unknown',
-  `panel_title` varchar(100) NOT NULL default 'Unnamed Panel',
-  `panel_url` varchar(100) default NULL,
-  `panel_level` tinyint(4) NOT NULL default '3',
-  `panel_order` tinyint(4) NOT NULL default '0',
-  `panel_hidden` tinyint(1) NOT NULL default '0',
-  `panel_type` varchar(20) NOT NULL default 'A',
-  PRIMARY KEY  (`panel_id`),
-  KEY `panel_type` (`panel_type`,`panel_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$panels = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_panels (
+  panel_id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  panel_name VARCHAR(50) NOT NULL default 'unknown',
+  panel_title VARCHAR(100) NOT NULL default 'Unnamed Panel',
+  panel_url VARCHAR(100) default NULL,
+  panel_level SMALLINT NOT NULL default '3',
+  panel_order SMALLINT NOT NULL default '0',
+  panel_hidden SMALLINT NOT NULL default '0',
+  panel_type VARCHAR(20) NOT NULL default 'A',
+  PRIMARY KEY  (panel_id)
+);
+				CREATE INDEX IF NOT EXISTS panel_type ON " . $tableprefix . "fanfiction_panels (panel_type,panel_name);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_panels</td><td align='center'>" . ($panels ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$ratings = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_ratings` (
-  `rid` int(11) NOT NULL auto_increment,
-  `rating` varchar(60) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  `ratingwarning` char(1) NOT NULL default '0',
-  `warningtext` text NOT NULL,
-  PRIMARY KEY  (`rid`),
-  KEY `rating` (`rating`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$ratings = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_ratings (
+  rid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  rating VARCHAR(60) NOT NULL default '',
+  ratingwarning SMALLINT NOT NULL default '0',
+  warningtext TEXT NOT NULL,
+  PRIMARY KEY  (rid)
+);
+				CREATE INDEX IF NOT EXISTS rating ON " . $tableprefix . "fanfiction_ratings (rating);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_ratings</td><td align='center'>" . ($ratings ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$reviews = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_reviews` (
-  `reviewid` int(11) NOT NULL auto_increment,
-  `item` int(11) NOT NULL default '0',
-  `chapid` int(11) NOT NULL default '0',
-  `reviewer` varchar(60) NOT NULL default '0',
-  `uid` int(11) NOT NULL default '0',
-  `review` text NOT NULL,
-  `date` int(10) unsigned NOT NULL default '0',
-  `rating` int(11) NOT NULL default '0',
-  `respond` char(1) NOT NULL default '0',
-  `type` char(2) NOT NULL default '',
-  PRIMARY KEY  (`reviewid`),
-  KEY `chapid` (`chapid`),
-  KEY `rating` (`rating`),
-  KEY `respond` (`respond`),
-  KEY `avgrating` (`type`,`item`,`rating`),
-  KEY `bychapter` (`chapid`,`rating`),
-  KEY `byuid` (`uid`,`item`,`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$reviews = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_reviews (
+  reviewid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  item INTEGER NOT NULL default '0',
+  chapid INTEGER NOT NULL default '0',
+  reviewer VARCHAR(60) NOT NULL default '0',
+  uid INTEGER NOT NULL default '0',
+  review TEXT NOT NULL,
+  date CHAR(10) NOT NULL default '0',
+  rating INTEGER NOT NULL default '0',
+  respond CHAR(1) NOT NULL default '0',
+  type CHAR(2) NOT NULL default '',
+  PRIMARY KEY  (reviewid)
+);
+				CREATE INDEX IF NOT EXISTS chapid ON " . $tableprefix . "fanfiction_reviews (chapid);
+				CREATE INDEX IF NOT EXISTS rating ON " . $tableprefix . "fanfiction_reviews (rating);
+				CREATE INDEX IF NOT EXISTS respond ON " . $tableprefix . "fanfiction_reviews (respond);
+				CREATE INDEX IF NOT EXISTS avgrating ON " . $tableprefix . "fanfiction_reviews (type,item,rating);
+				CREATE INDEX IF NOT EXISTS bychapter ON " . $tableprefix . "fanfiction_reviews (chapid,rating);
+				CREATE INDEX IF NOT EXISTS byuid ON " . $tableprefix . "fanfiction_reviews (uid,item,type);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_reviews</td><td align='center'>" . ($reviews ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$series = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_series` (
-  `seriesid` int(11) NOT NULL auto_increment,
-  `title` varchar(200) NOT NULL default '' COLLATE utf8mb4_unicode_ci,
-  `summary` text NOT NULL COLLATE utf8mb4_unicode_ci,
-  `uid` int(11) NOT NULL default '0',
-  `isopen` tinyint(4) NOT NULL default '0',
-  `catid` varchar(200) NOT NULL default '0',
-  `rating` tinyint(4) NOT NULL default '0',
-  `classes` varchar(200) NOT NULL default '',
-  `characters` varchar(250) NOT NULL default '',
-  `reviews` smallint(6) NOT NULL default '0',
-  `numstories` INT NOT NULL DEFAULT '0',
-  `challenges` varchar(200) NOT NULL default '',
-  PRIMARY KEY  (`seriesid`),
-  KEY `catid` (`catid`),
-  KEY `characters` (`characters`),
-  KEY `classes` (`classes`),
-  KEY `owner` (`uid`,`title`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$series = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_series (
+  seriesid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  title VARCHAR(200) NOT NULL default '',
+  summary TEXT NOT NULL,
+  uid INTEGER NOT NULL default '0',
+  isopen SMALLINT NOT NULL default '0',
+  catid VARCHAR(200) NOT NULL default '0',
+  rating SMALLINT NOT NULL default '0',
+  classes VARCHAR(200) NOT NULL default '',
+  characters VARCHAR(250) NOT NULL default '',
+  reviews INTEGER NOT NULL default '0',
+  numstories INTEGER NOT NULL DEFAULT '0',
+  challenges VARCHAR(200) NOT NULL default '',
+  PRIMARY KEY  (seriesid)
+);
+				CREATE INDEX IF NOT EXISTS catid ON " . $tableprefix . "fanfiction_series (catid);
+				CREATE INDEX IF NOT EXISTS characters ON " . $tableprefix . "fanfiction_series (characters);
+				CREATE INDEX IF NOT EXISTS classes ON " . $tableprefix . "fanfiction_series (classes);
+				CREATE INDEX IF NOT EXISTS owner ON " . $tableprefix . "fanfiction_series (uid,title);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_series</td><td align='center'>" . ($series ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$stats = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_stats` (
-  `sitekey` varchar(50) NOT NULL default '0',
-  `stories` int(11) NOT NULL default '0',
-  `chapters` int(11) NOT NULL default '0',
-  `series` int(11) NOT NULL default '0',
-  `reviews` int(11) NOT NULL default '0',
-  `wordcount` int(11) NOT NULL default '0',
-  `authors` int(11) NOT NULL default '0',
-  `members` int(11) NOT NULL default '0',
-  `reviewers` int(11) NOT NULL default '0',
-  `newestmember` int(11) NOT NULL default '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin");
-				dbquery("INSERT INTO " . $tableprefix . "fanfiction_stats(`sitekey`, `newestmember`) VALUES('" . SITEKEY . "', '1')");
+				$stats = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_stats (
+  sitekey VARCHAR(50) NOT NULL default '0',
+  stories INTEGER NOT NULL default '0',
+  chapters INTEGER NOT NULL default '0',
+  series INTEGER NOT NULL default '0',
+  reviews INTEGER NOT NULL default '0',
+  wordcount INTEGER NOT NULL default '0',
+  authors INTEGER NOT NULL default '0',
+  members INTEGER NOT NULL default '0',
+  reviewers INTEGER NOT NULL default '0',
+  newestmember INTEGER NOT NULL default '0'
+);");
+				dbquery("INSERT INTO " . $tableprefix . "fanfiction_stats(sitekey, newestmember) VALUES('" . SITEKEY . "', '1')");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_stats</td><td align='center'>" . ($stats ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
-				$stories = dbquery("CREATE TABLE IF NOT EXISTS `" . $tableprefix . "fanfiction_stories` (
-  `sid` int(11) NOT NULL auto_increment,
-  `title` varchar(200) NOT NULL default 'Untitled' COLLATE utf8mb4_unicode_ci,
-  `summary` text NULL COLLATE utf8mb4_unicode_ci,
-  `storynotes` text NULL,
-  `catid` varchar(100) NOT NULL default '0',
-  `classes` varchar(200) NOT NULL default '0',
-  `charid` varchar(250) NOT NULL default '0',
-  `rid` varchar(25) NOT NULL default '0',
-  `date` int(10) unsigned NOT NULL default '0',
-  `updated` int(10) unsigned NOT NULL default '0',
-  `uid` int(11) NOT NULL default '0',
-  `coauthors` tinyint(1) NOT NULL default '0',
-  `featured` char(1) NOT NULL default '0',
-  `validated` char(1) NOT NULL default '0',
-  `completed` char(1) NOT NULL default '0',
-  `rr` char(1) NOT NULL default '0',
-  `wordcount` int(11) NOT NULL default '0',
-  `rating` tinyint(4) NOT NULL default '0',
-  `reviews` smallint(6) NOT NULL default '0',
-  `count` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`sid`),
-  KEY `title` (`title`),
-  KEY `catid` (`catid`),
-  KEY `charid` (`charid`),
-  KEY `rid` (`rid`),
-  KEY `uid` (`uid`),
-  KEY `featured` (`featured`),
-  KEY `completed` (`completed`),
-  KEY `rr` (`rr`),
-  KEY `validateduid` (`validated`,`uid`),
-  KEY `recent` (`updated`,`validated`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+				$stories = dbquery("CREATE TABLE IF NOT EXISTS " . $tableprefix . "fanfiction_stories (
+  sid INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+  title VARCHAR(200) NOT NULL default 'Untitled',
+  summary TEXT NULL,
+  storynotes TEXT NULL,
+  catid VARCHAR(100) NOT NULL default '0',
+  classes VARCHAR(200) NOT NULL default '0',
+  charid VARCHAR(250) NOT NULL default '0',
+  rid VARCHAR(25) NOT NULL default '0',
+  date CHAR(10) NOT NULL default '0',
+  updated CHAR(10) NOT NULL default '0',
+  uid INTEGER NOT NULL default '0',
+  coauthors SMALLINT NOT NULL default '0',
+  featured SMALLINT NOT NULL default '0',
+  validated SMALLINT NOT NULL default '0',
+  completed SMALLINT NOT NULL default '0',
+  rr SMALLINT NOT NULL default '0',
+  wordcount INTEGER NOT NULL default '0',
+  rating SMALLINT NOT NULL default '0',
+  reviews INTEGER NOT NULL default '0',
+  count INTEGER NOT NULL default '0',
+  PRIMARY KEY  (sid)
+);
+				CREATE INDEX IF NOT EXISTS title ON " . $tableprefix . "fanfiction_stories (title);
+				CREATE INDEX IF NOT EXISTS catid ON " . $tableprefix . "fanfiction_stories (catid);
+				CREATE INDEX IF NOT EXISTS charid ON " . $tableprefix . "fanfiction_stories (charid);
+				CREATE INDEX IF NOT EXISTS rid ON " . $tableprefix . "fanfiction_stories (rid);
+				CREATE INDEX IF NOT EXISTS uid ON " . $tableprefix . "fanfiction_stories (uid);
+				CREATE INDEX IF NOT EXISTS featured ON " . $tableprefix . "fanfiction_stories (featured);
+				CREATE INDEX IF NOT EXISTS completed ON " . $tableprefix . "fanfiction_stories (completed);
+				CREATE INDEX IF NOT EXISTS rr ON " . $tableprefix . "fanfiction_stories (rr);
+				CREATE INDEX IF NOT EXISTS validateduid ON " . $tableprefix . "fanfiction_stories (validated,uid);
+				CREATE INDEX IF NOT EXISTS recent ON " . $tableprefix . "fanfiction_stories (updated,validated);");
 				$output .= "<tr><td>" . $tableprefix . "fanfiction_stories</td><td align='center'>" . ($stories ? "<img src=\"../images/check.gif\">" : "<img src=\"../images/X.gif\">") . "</td></tr>";
 				$output .= "</table>";
 				$output .= write_message(_TABLEFAILED . "<br /><br /><a href='install.php?step=4'>" . _CONTINUE . "</a>");
@@ -849,7 +851,9 @@ switch ($_GET['step'])
 
 	case "2";
 		include("../config.php");
-		if (dbnumrows(dbquery("SHOW TABLES LIKE '" . $settingsprefix . "fanfiction_settings'")))
+		//if (dbnumrows(dbquery("SHOW TABLES LIKE " . $settingsprefix . "fanfiction_settings")))
+		//if (dbnumrows(dbquery("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$dbschema' AND table_name = '" . $settingsprefix . "fanfiction_settings') AS table_existence;")))
+		if (dbnumrows(dbquery("SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema' AND tablename like 'fanfiction_settings';")))
 		{
 			$dbconnect = dbconnect($dbhost, $dbuser, $dbpass, $dbname);
 			$settings = dbquery("SELECT tableprefix, language FROM " . $settingsprefix . "fanfiction_settings WHERE sitekey = '" . $sitekey . "'");
@@ -864,7 +868,7 @@ switch ($_GET['step'])
 			$settingsresults = dbquery("SELECT * FROM " . $settingsprefix . "fanfiction_settings WHERE sitekey = '" . SITEKEY . "'");
 			if (dbnumrows($settingsresults) == 0)
 			{
-				dbquery("INSERT INTO " . $settingsprefix . "fanfiction_settings (`sitekey`) VALUES('" . SITEKEY . "');");
+				dbquery("INSERT INTO " . $settingsprefix . "fanfiction_settings (sitekey) VALUES('" . SITEKEY . "');");
 				$settingsresults = dbquery("SELECT * FROM " . $settingsprefix . "fanfiction_settings WHERE sitekey = '" . SITEKEY . "'");
 			}
 			$settings = dbassoc($settingsresults);
@@ -911,67 +915,67 @@ switch ($_GET['step'])
 				if ($_GET['install'] == "automatic")
 				{
 
-					$settings = dbquery("CREATE TABLE IF NOT EXISTS `" . $settingsprefix . "fanfiction_settings` (
-  `sitekey` varchar(50) NOT NULL default '1',
-  `sitename` varchar(200) NOT NULL default 'Your Site',
-  `slogan` varchar(200) NOT NULL default 'It''s a cool site!',
-  `url` varchar(200) NOT NULL default 'http://www.yoursite.com',
-  `siteemail` varchar(200) NOT NULL default 'you@yoursite.com',
-  `tableprefix` varchar(50) NOT NULL default '',
-  `skin` varchar(50) NOT NULL default 'default',
-  `hiddenskins` varchar(255) default '',
-  `language` varchar(10) NOT NULL default 'en',
-  `submissionsoff` tinyint(1) NOT NULL default '0',
-  `storiespath` varchar(20) NOT NULL default 'stories',
-  `store` varchar(5) NOT NULL default 'files',
-  `autovalidate` tinyint(1) NOT NULL default '0',
-  `coauthallowed` int(1) NOT NULL default '0',
-  `maxwords` int(11) NOT NULL default '0',
-  `minwords` int(11) NOT NULL default '0',
-  `imageupload` tinyint(1) NOT NULL default '0',
-  `imageheight` int(11) NOT NULL default '200',
-  `imagewidth` int(11) NOT NULL default '200',
-  `roundrobins` tinyint(1) NOT NULL default '0',
-  `allowseries` tinyint(4) NOT NULL default '2',
-  `tinyMCE` tinyint(1) NOT NULL default '0',
-  `allowed_tags` varchar(200) NOT NULL default '<b><i><u><center><hr><p><br /><br><blockquote><ol><ul><li><img><strong><em>',
-  `favorites` tinyint(1) NOT NULL default '0',
-  `multiplecats` tinyint(1) NOT NULL default '0',
-  `setreg` tinyint(1) NOT NULL default '1',
-  `newscomments` tinyint(1) NOT NULL default '0',
-  `logging` tinyint(1) NOT NULL default '0',
-  `maintenance` tinyint(1) NOT NULL default '0',
-  `debug` tinyint(1) NOT NULL default '0',
-  `captcha` tinyint(1) NOT NULL default '0',
-  `dateformat` varchar(20) NOT NULL default 'd/m/y',
-  `timeformat` varchar(20) NOT NULL default '- h:i a',
-  `recentdays` tinyint(2) NOT NULL default '7',
-  `displaycolumns` tinyint(1) NOT NULL default '1',
-  `itemsperpage` tinyint(2) NOT NULL default '25',
-  `extendcats` tinyint(1) NOT NULL default '0',
-  `displayindex` tinyint(1) NOT NULL default '0',
-  `defaultsort` tinyint(1) NOT NULL default '0',
-  `displayprofile` tinyint(1) NOT NULL default '0',
-  `linkstyle` tinyint(1) NOT NULL default '0',
-  `linkrange` tinyint(2) NOT NULL default '5',
-  `reviewsallowed` tinyint(1) NOT NULL default '0',
-  `ratings` tinyint(1) NOT NULL default '0',
-  `anonreviews` tinyint(1) NOT NULL default '0',
-  `revdelete` tinyint(1) NOT NULL default '0',
-  `rateonly` tinyint(1) NOT NULL default '0',
-  `pwdsetting` tinyint(1) NOT NULL default '0',
-  `alertson` tinyint(1) NOT NULL default '0',
-  `disablepopups` tinyint(1) NOT NULL default '0',
-  `agestatement` tinyint(1) NOT NULL default '0',
-  `words` text,
-  `version` varchar(10) NOT NULL default '" . $version . "',
-  `smtp_host` varchar(200) default NULL,
-  `smtp_username` varchar(50) default NULL,
-  `smtp_password` varchar(50) default NULL,
-  `smtp_port` varchar(5) NOT NULL default '',
-  `smtp_secure` varchar(3) NOT NULL default '',
-  PRIMARY KEY  (`sitekey`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;");
+					$settings = dbquery("CREATE TABLE IF NOT EXISTS " . $settingsprefix . "fanfiction_settings (
+  sitekey VARCHAR(50) NOT NULL default '1',
+  sitename VARCHAR(200) NOT NULL default 'Your Site',
+  slogan VARCHAR(200) NOT NULL default 'It''s a cool site!',
+  url VARCHAR(200) NOT NULL default 'http://www.yoursite.com',
+  siteemail VARCHAR(200) NOT NULL default 'you@yoursite.com',
+  tableprefix VARCHAR(50) NOT NULL default '',
+  skin VARCHAR(50) NOT NULL default 'default',
+  hiddenskins VARCHAR(255) default '',
+  language VARCHAR(10) NOT NULL default 'en',
+  submissionsoff SMALLINT NOT NULL default '0',
+  storiespath VARCHAR(20) NOT NULL default 'stories',
+  store VARCHAR(5) NOT NULL default 'files',
+  autovalidate SMALLINT NOT NULL default '0',
+  coauthallowed SMALLINT NOT NULL default '0',
+  maxwords INTEGER NOT NULL default '0',
+  minwords INTEGER NOT NULL default '0',
+  imageupload SMALLINT NOT NULL default '0',
+  imageheight INTEGER NOT NULL default '200',
+  imagewidth INTEGER NOT NULL default '200',
+  roundrobins SMALLINT NOT NULL default '0',
+  allowseries SMALLINT NOT NULL default '2',
+  tinymce SMALLINT NOT NULL default '0',
+  allowed_tags VARCHAR(200) NOT NULL default '<b><i><u><center><hr><p><br /><br><blockquote><ol><ul><li><img><strong><em>',
+  favorites SMALLINT NOT NULL default '0',
+  multiplecats SMALLINT NOT NULL default '0',
+  setreg SMALLINT NOT NULL default '1',
+  newscomments SMALLINT NOT NULL default '0',
+  logging SMALLINT NOT NULL default '0',
+  maintenance SMALLINT NOT NULL default '0',
+  debug SMALLINT NOT NULL default '0',
+  captcha SMALLINT NOT NULL default '0',
+  dateformat VARCHAR(20) NOT NULL default 'd/m/y',
+  timeformat VARCHAR(20) NOT NULL default '- h:i a',
+  recentdays SMALLINT NOT NULL default '7',
+  displaycolumns SMALLINT NOT NULL default '1',
+  itemsperpage SMALLINT NOT NULL default '25',
+  extendcats SMALLINT NOT NULL default '0',
+  displayindex SMALLINT NOT NULL default '0',
+  defaultsort SMALLINT NOT NULL default '0',
+  displayprofile SMALLINT NOT NULL default '0',
+  linkstyle SMALLINT NOT NULL default '0',
+  linkrange SMALLINT NOT NULL default '5',
+  reviewsallowed SMALLINT NOT NULL default '0',
+  ratings INTEGER NOT NULL default '0',
+  anonreviews SMALLINT NOT NULL default '0',
+  revdelete INTEGER NOT NULL default '0',
+  rateonly SMALLINT NOT NULL default '0',
+  pwdsetting SMALLINT NOT NULL default '0',
+  alertson SMALLINT NOT NULL default '0',
+  disablepopups SMALLINT NOT NULL default '0',
+  agestatement SMALLINT NOT NULL default '0',
+  words TEXT,
+  version VARCHAR(10) NOT NULL default '" . $version . "',
+  smtp_host VARCHAR(200) default NULL,
+  smtp_username VARCHAR(50) default NULL,
+  smtp_password VARCHAR(50) default NULL,
+  smtp_port VARCHAR(5) NOT NULL default '',
+  smtp_secure VARCHAR(3) NOT NULL default '',
+  PRIMARY KEY  (sitekey)
+);");
 					if ($settings) $output .= write_message("<img src=\"../images/check.gif\"> " . _SETTINGSTABLESUCCESS . " <br /><a href='install.php?step=2'>" . _CONTINUE . "</a>");
 					else $output .= write_message(_SETTINGSTABLEAUTOFAIL . "<br /><br /> <a href='install.php?step=2'>" . _CONTINUE . "</a>");
 				}
@@ -983,7 +987,8 @@ switch ($_GET['step'])
 			else
 			{
 
-				$test = dbquery("SHOW TABLES");
+				//$test = dbquery("SELECT * FROM pg_database;");
+				$test = dbquery("SELECT * FROM pg_catalog.pg_tables WHERE schemaname = '$tableprefix'");
 				if (!$test) $output .= write_message(_CONFIGFAILED. "(2)");
 				else $output .= write_message(_SETTINGSTABLESETUP . " <a href='install.php?step=2&amp;install=automatic'>" . _AUTO . "</a> " . _OR . " <a href='install.php?step=2&amp;install=manual'>" . _MANUAL2 . "</a>");
 			}
@@ -1001,14 +1006,14 @@ switch ($_GET['step'])
 			$language = $_POST['language'];
 			$sitekey = descript($_POST['sitekey']);
 			$settingsprefix = descript($_POST['settingsprefix']);
-			$mysqli_access = @mysqli_connect($dbhost, $dbuser,$dbpass, $dbname);
+			$pg_access = @pg_connect("host=$dbhost user=$dbuser password=$dbpass dbname=$dbname");
 			 
-			if (!$mysqli_access)
+			if (!$pg_access)
 			{
 				$output .= write_message(_CONFIGFAILED . "(1)");
 			}
 		}
-		if (isset($_POST['submit']) && $mysqli_access)
+		if (isset($_POST['submit']) && $pg_access)
 		{
 		
 			$handle = fopen("../config.php", 'w');
@@ -1038,11 +1043,6 @@ switch ($_GET['step'])
 include(\"includes/dbfunctions.php\");
 ?>";
 
-/* removed in 3.5.8 and moved to file: 
-include(\"includes/dbfunctions.php\");
-if(!empty(\$sitekey)) \$dbconnect = dbconnect(\$dbhost, \$dbuser,\$dbpass, \$dbname);
-*/
-
 				fwrite($handle, $text);
 				fclose($handle);
 				@chmod("../config.php", 0644);
@@ -1052,10 +1052,10 @@ if(!empty(\$sitekey)) \$dbconnect = dbconnect(\$dbhost, \$dbuser,\$dbpass, \$dbn
 		}
 		else
 		{
-			if (file_exists("../config.php") && !isset($mysqli_access)) {
+			if (file_exists("../config.php") && !isset($pg_access)) {
 				include("../config.php");
 			}
-			if (isset($tinyMCE)) $output .= write_message(_CONFIG2DETECTED);
+			if (isset($tinymce)) $output .= write_message(_CONFIG2DETECTED);
 			else if (isset($sitename) && $sitename) $output .= write_message(_CONFIG1DETECTED);
 			else
 			{
