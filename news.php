@@ -121,7 +121,7 @@ else {
 	$news->prepare( );
 	$cquery = dbquery("SELECT count(nid) FROM ".TABLEPREFIX."fanfiction_news");
 	list($count) = dbrow($cquery);
-	$newsquery = dbquery("SELECT n.*, n.time as date FROM ".TABLEPREFIX."fanfiction_news as n ORDER BY n.time DESC LIMIT $offset, $itemsperpage");
+	$newsquery = dbquery("SELECT n.*, n.time as date FROM ".TABLEPREFIX."fanfiction_news as n ORDER BY n.time DESC OFFSET $offset LIMIT $itemsperpage");
 	$counter = 0;
 	while($stories = dbassoc($newsquery)) {
 

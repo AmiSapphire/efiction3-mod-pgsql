@@ -201,9 +201,9 @@ if(is_dir(_BASEDIR."skins/$siteskin")) $skindir = _BASEDIR."skins/$siteskin";
 else if(is_dir(_BASEDIR."skins/".$settings['skin'])) $skindir = _BASEDIR."skins/".$defaultskin;
 else $skindir = _BASEDIR."default_tpls";
 if(USERUID) {
-	$prefs = dbquery("SELECT sortby, storyindex, tinyMCE FROM ".TABLEPREFIX."fanfiction_authorprefs WHERE uid = '".USERUID."'");
+	$prefs = dbquery("SELECT sortby, storyindex, tinymce FROM ".TABLEPREFIX."fanfiction_authorprefs WHERE uid = '".USERUID."'");
 	if(dbnumrows($prefs)) list($defaultsort, $displayindex, $tinyMCEAuthor) = dbrow($prefs);
-	if(!$tinyMCEAuthor) $tinyMCE = 0;
+	if(!$tinyMCEAuthor) $tinymce = 0;
 }
 if(isset($_REQUEST['sort'])) $defaultsort = $_REQUEST['sort'] == "update" ? 1 : 0;
 define("_ORDERBY", " ORDER BY ".($defaultsort == 1 ? "updated DESC" : "stories.title ASC"));
@@ -256,25 +256,25 @@ if (!isset($_GET['action']) || $_GET['action'] != "printable")
 
 if (!isset($_GET['action']) || $_GET['action'] != "printable")
 {
-	if (!empty($tinyMCE))
+	if (!empty($tinymce))
 	{
-		if($tinyMCE == 5) {
+		if($tinymce == 5) {
 			echo "<script src=\"" . _BASEDIR . "tinymce/6/js/tinymce/tinymce.min.js\"></script>";
 			include(_BASEDIR . "tinymce/6/init.php");
 		}
-		else if($tinyMCE == 4) {
+		else if($tinymce == 4) {
 			echo "<script src=\"" . _BASEDIR . "tinymce/5/js/tinymce/tinymce.min.js\"></script>";
 			include(_BASEDIR . "tinymce/5/init.php");
 		}
-		else if($tinyMCE == 3) {
+		else if($tinymce == 3) {
 			echo "<script src=\"" . _BASEDIR . "tinymce/4/js/tinymce/tinymce.min.js\"></script>";
 			include(_BASEDIR . "tinymce/4/init.php");
 		}
-		else if($tinyMCE == 2) {
+		else if($tinymce == 2) {
 			echo "<script src=\"" . _BASEDIR . "tinymce/3/jscripts/tiny_mce/tiny_mce.js\"></script>";
 			include(_BASEDIR . "tinymce/3/init.php");
 		}
-		else if($tinyMCE == 1) {
+		else if($tinymce == 1) {
 			echo "<script src=\"" . _BASEDIR . "tinymce/2/jscripts/tiny_mce/tiny_mce.js\"></script>";
 			include(_BASEDIR . "tinymce/2/init.php");
 		}

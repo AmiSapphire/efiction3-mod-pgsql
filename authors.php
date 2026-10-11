@@ -57,7 +57,7 @@ else {
 $listOpts = ""; $countquery = "";
 	if($list == "authors") {
 		$pagetitle .= _AUTHORS;
-		$authorquery = "SELECT "._PENNAMEFIELD." as penname, "._UIDFIELD." as uid, ap.stories FROM "._AUTHORTABLE." LEFT JOIN ".TABLEPREFIX."fanfiction_authorprefs as ap ON ap.uid = "._UIDFIELD." WHERE ap.stories > 0 ".(isset($letter) ? " AND $letter" : "")." GROUP BY "._UIDFIELD;
+		$authorquery = "SELECT "._PENNAMEFIELD." as penname, "._UIDFIELD." as uid, (ARRAY_AGG(ap.stories))[0] FROM "._AUTHORTABLE." LEFT JOIN ".TABLEPREFIX."fanfiction_authorprefs as ap ON ap.uid = "._UIDFIELD." WHERE ap.stories > 0 ".(isset($letter) ? " AND $letter" : "")." GROUP BY "._UIDFIELD;
 		$countquery = "SELECT count("._UIDFIELD.") FROM "._AUTHORTABLE." LEFT JOIN ".TABLEPREFIX."fanfiction_authorprefs as ap ON "._UIDFIELD." = ap.uid WHERE ap.stories > 0 ".(isset($letter) ? " AND $letter" : "");
 	}
 	else if($list == "admins") {
