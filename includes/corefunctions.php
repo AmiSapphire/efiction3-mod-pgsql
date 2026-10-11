@@ -557,7 +557,7 @@ function search($storyquery, $countquery, $pagelink = "search.php?", $pagetitle 
 		$tpl->newBlock("listings");
 		$tpl->gotoBlock("listings");
 		$tpl->assign("stories",  "<div class=\"sectionheader\">"._STORIES."</div>");
-		$storyquery .= " LIMIT $offset, $itemsperpage";
+		$storyquery .= " OFFSET $offset LIMIT $itemsperpage";
 		$result3 = dbquery($storyquery);     
 		$count = 0;                     
 		while($stories = dbassoc($result3)) {       

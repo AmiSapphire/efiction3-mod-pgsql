@@ -33,7 +33,7 @@ if(!defined("_CHARSET")) exit( );
 		$colwidth = (100/ $displaycolumns) -1;
 		$count = 0;
 		$column = 1;
-		$authorquery = $authorquery. " ORDER BY "._PENNAMEFIELD." LIMIT $offset,$limit";
+		$authorquery = $authorquery. " ORDER BY "._PENNAMEFIELD." OFFSET $offset LIMIT $limit";
 		$result2 = dbquery($authorquery);
 		$output .= "<div id=\"columncontainer\"><div id=\"memberblock\">".($displaycolumns ? "<div class=\"column\">" : "");
 		while($author = dbassoc($result2)) {

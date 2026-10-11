@@ -30,7 +30,7 @@ if(!defined("_CHARSET")) exit( );
 //function to build story data section of the form.
 function storyform($stories, $preview = 0){
 
-	global $admin, $allowed_tags, $multiplecats,  $roundrobins, $catlist, $coauthallowed, $tinyMCE, $action, $sid;
+	global $admin, $allowed_tags, $multiplecats,  $roundrobins, $catlist, $coauthallowed, $tinymce, $action, $sid;
 
 	$classes = explode(",", $stories['classes']);
 	$charid = explode(",", $stories['charid']);
@@ -78,11 +78,11 @@ function storyform($stories, $preview = 0){
 		<input type='hidden' name='coauthors' id='coauthors' value='$couids'></div>";
 	}
 	$output .= "<p><label for=\"summary\">"._SUMMARY.":</label> ".(!$summary ? "<span style=\"font-weight: bold; color: red\">*</span>" : "")."<br><textarea class=\"textbox\" rows=\"6\" name=\"summary\" id=\"summary\" cols=\"58\">$summary</textarea>";
-	if($tinyMCE) 
+	if($tinymce)
 		$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('summary');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 	$output .= "</p>
 		<p><label for=\"storynotes\">"._STORYNOTES.":</label> <br /><textarea class=\"textbox\" rows=\"6\" name=\"storynotes\" id=\"storynotes\" cols=\"58\">$storynotes</textarea></p>";
-	if($tinyMCE) 
+	if($tinymce)
 		$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('storynotes');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 	if(!$multiplecats) $output .= "<input type=\"hidden\" name=\"catid\" id=\"catid\" value=\"1\">";
 	else {
@@ -144,11 +144,11 @@ function storyform($stories, $preview = 0){
 
 // function to build chapter info section of the form.
 function chapterform($inorder, $notes, $endnotes, $storytext, $chaptertitle, $uid = 0) {
-	global $admin, $tinyMCE, $action, $preview;
+	global $admin, $tinymce, $action, $preview;
 	$inorder++;
 	$default = _CHAPTER." ". $inorder;
 	if($chaptertitle != "") $default = $chaptertitle;
-	if($tinyMCE && strpos($storytext, "<br>") === false && strpos($storytext, "<p>") === false && strpos($storytext, "<br />") === false) $storytext = nl2br($storytext);
+	if($tinymce && strpos($storytext, "<br>") === false && strpos($storytext, "<p>") === false && strpos($storytext, "<br />") === false) $storytext = nl2br($storytext);
 	$output = "";
 	if($admin && ($action == "newchapter" || $action == "editchapter")) {
 		$authorquery = dbquery("SELECT "._PENNAMEFIELD." as penname, "._UIDFIELD." as uid FROM "._AUTHORTABLE." ORDER BY penname");
@@ -161,15 +161,15 @@ function chapterform($inorder, $notes, $endnotes, $storytext, $chaptertitle, $ui
 	$output .= "<p><label for=\"chaptertitle\">"._CHAPTERTITLE.":</label> <input type=\"text\" class=\"textbox\" id=\"chaptertitle\" maxlength=\"200\" name=\"chaptertitle\" size=\"50\" value=\"".htmlentities($default)."\"> </p>
 		<p>"._ALLOWEDTAGS."</p>
 		<div><label for=\"notes\">"._CHAPTERNOTES.":</label><br /><textarea class=\"textbox\" rows=\"5\" id=\"notes\" name=\"notes\" cols=\"58\">$notes</textarea></div>";
-	if($tinyMCE) 
+	if($tinymce)
 		$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('notes');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 	$output .= "<div><label for=\"storytext\">"._STORYTEXTTEXT.":</label>".(!$storytext ? "<span style=\"font-weight: bold; color: red\">*</span>" : "")."<br><textarea class=\"textbox\" rows=\"15\" id=\"storytext\" name=\"storytext\" cols=\"58\">".$storytext."</textarea></div>";
-	if($tinyMCE) 
+	if($tinymce)
 		$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('storytext');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 	$output .= "<p><strong>"._OR."</strong> </p>
 		<p><label for=\"storyfile\">"._STORYTEXTFILE.":</label> <INPUT type=\"file\" id=\"storyfile\" class=\"textbox\" name=\"storyfile\" onClick=\"this.form.storytext.disabled=true\"> </p>
 		<div><label for=\"notes\">"._ENDNOTES.":</label><br><textarea class=\"textbox\" rows=\"5\" id=\"endnotes\" name=\"endnotes\" cols=\"58\">$endnotes</textarea></div>";
-	if($tinyMCE) 
+	if($tinymce)
 		$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('endnotes');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 	return $output;
 }

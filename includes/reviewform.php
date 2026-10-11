@@ -35,7 +35,7 @@ if($action != "edit") {
 else $form .= $review['reviewer']."<INPUT type=\"hidden\" name=\"reviewid\" value=\"".$review['reviewid']."\">";
 $form .= "<br /><label for=\"review\">"._REVIEW.":</label><br />
 <textarea class=\"textbox\" name=\"review\" id=\"review\" cols=\"40\" rows=\"5\">".$review['review']."</textarea>";
-if($tinyMCE) 
+if($tinymce)
 	$form .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('review');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 if($ratings == "3"){
 	$form .= "<div><label for=\"rating\">"._LIKED."?</label> <select id=\"rating\" name=\"rating\" class=\"textbox\">
