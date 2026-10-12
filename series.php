@@ -162,7 +162,7 @@ if($add == "series" || ($action == "add" && !$add) || $action == "edit") {
 	}
 	$output .= "<label for=\"title\">"._TITLE.":</label> <font color=\"red\">*</font> <input  type=\"text\" class=\"textbox=\" name=\"title\" id=\"title\" value=\"".(isset($series) ? htmlentities($series['title']) : "")."\"  maxlength=\"200\" size=\"60\"><input type=\"hidden\" value=\"".(isset($series) ? $series['uid'] : "")."\"><br />
 		<label for=\"summary\">"._SUMMARY.":</label><font color=\"red\">*</font><br /><textarea rows=\"6\" id=\"summary\" name=\"summary\" cols=\"58\">".(isset($series) ? $series['summary'] : "")."</textarea><br />";
-	if($tinyMCE) 
+	if($tinymce)
 		$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('summary');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
 	if(!$multiplecats) $output .= "<input type=\"hidden\" name=\"catid[]\" id=\"catid\" value=\"1\">";
 	else {	

@@ -478,7 +478,7 @@ function viewstories( ) {
 // end viewstories function
 
 function editchapter( $chapid ) {
-	global $tpl, $chapid, $store, $alertson, $storiespath, $admin, $tinyMCE, $allowed_tags, $sid, $logging;
+	global $tpl, $chapid, $store, $alertson, $storiespath, $admin, $tinymce, $allowed_tags, $sid, $logging;
 
 	$output = "<div id=\"pagetitle\">"._EDITCHAPTER."</div>";
 // get variables from $_POST
@@ -607,7 +607,7 @@ function editchapter( $chapid ) {
 // end editchapter function
 
 function editstory($sid) {
-	global $tpl, $storiespath, $store, $allowed_tags, $uid, $admin, $tinyMCE, $up, $down, $dateformat, $classtypelist, $logging, $alertson;
+	global $tpl, $storiespath, $store, $allowed_tags, $uid, $admin, $tinymce, $up, $down, $dateformat, $classtypelist, $logging, $alertson;
 
 	$output = "<div id=\"pagetitle\">"._EDITSTORY."</div>";
 	if(isset($admin) && isset($uid)) {
