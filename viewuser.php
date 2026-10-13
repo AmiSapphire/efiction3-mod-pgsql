@@ -45,7 +45,8 @@ if(empty($uid)) {
 		$current = "userinfoerror";
 		// load our template files to set up the page.
 		if (file_exists("$skindir/default.tpl")) $tpl = new TemplatePower("$skindir/default.tpl");
-		else $tpl = new TemplatePower("default_tpls/default.tpl");		$title = "User was not found";
+		else $tpl = new TemplatePower("default_tpls/default.tpl");
+		$title = "User was not found";
 		$text  = "User with ID " . (($uid) ?? null) . " is not in database";
 		include("includes/pagesetup.php");
 		$tpl->assign("output", "<div id='pagetitle'>" . $title . "</div>" . write_error($text));
