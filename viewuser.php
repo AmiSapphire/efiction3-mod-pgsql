@@ -40,6 +40,19 @@ include("includes/pagesetup.php");
 // If uid isn't a number kill the script with an error message.  The only way this happens is a hacker.
 if(empty($uid)) {
 	if(!isMEMBER) accessDenied( );
+	$uid = '';
+	if ($uid < 1) {
+		$current = "userinfoerror";
+		// load our template files to set up the page.
+		if (file_exists("$skindir/default.tpl")) $tpl = new TemplatePower("$skindir/default.tpl");
+		else $tpl = new TemplatePower("default_tpls/default.tpl");		$title = "User was not found";
+		$text  = "User with ID " . (($uid) ?? null) . " is not in database";
+		include("includes/pagesetup.php");
+		$tpl->assign("output", "<div id='pagetitle'>" . $title . "</div>" . write_error($text));
+		$tpl->printToScreen();
+		dbclose();
+		exit();
+	}
 	else $uid = USERUID;
 }
 if($displayprofile) include("user/profile.php");
@@ -55,6 +68,19 @@ else if(isADMIN && uLEVEL < 3) {
 $infoquery = dbquery("SELECT "._PENNAMEFIELD." as penname FROM "._AUTHORTABLE." WHERE "._UIDFIELD." = '$uid' LIMIT 1");
 
 list($penname) = dbrow($infoquery);
+if(!$penname) {
+	$current = "userinfoerror";
+	// load our template files to set up the page.
+	if (file_exists("$skindir/default.tpl")) $tpl = new TemplatePower("$skindir/default.tpl");
+	else $tpl = new TemplatePower("default_tpls/default.tpl");
+	$title = "User was not found";
+	$text  = "User with ID " . (($uid) ?? null) . " is not in database";
+	include("includes/pagesetup.php");
+	$tpl->assign("output", "<div id='pagetitle'>" . $title . "</div>" . write_error($text));
+	$tpl->printToScreen();
+	dbclose();
+	exit();
+}
 $tpl->assign("pagetitle", "<div id='pagetitle'>$penname</div>");
 $panelquery = dbquery("SELECT * FROM ".TABLEPREFIX."fanfiction_panels WHERE ".($action ? "panel_name = '$action' AND (panel_type = 'P' OR panel_type = 'F')" : "panel_type = 'P' AND panel_hidden = 0 ORDER BY panel_order ASC")." LIMIT 1");
 if($panelquery) {
