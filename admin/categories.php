@@ -184,7 +184,7 @@ function relevelcategory($cat, $leveldown) {
 			$showlist = 0;	
 			$output .= "<div style='width: 100%;'><div  id=\"settingsform\"><form method='POST' enctype='multipart/form-data' name='form' action='admin.php?action=categories".($cat ? "&cat=$cat" : "")."'>
 				<div class='sectionheader'>".(!$new ? _EDITCAT : _NEWCAT)."</div>
-				<div><label for='parentcatid'>"._CATLEVEL.": </label>
+				<div style=\"width: 130%;\"><label for='parentcatid'>"._CATLEVEL.": </label>
 				<select name='parentcatid' id='parentcatid' onchange=\"setCategoryForm(this);\"><option value='-1'>"._TOPLEVEL."</option>";
 			if(count($catlist) > 0) {
 				$opt2 = "";
@@ -196,22 +196,22 @@ function relevelcategory($cat, $leveldown) {
 				}
 			}
 			$output .= "</select> <A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_CATLEVEL."</span></A></div>";
-			$output .= "<div><label for='orderafter'>"._ORDERAFTER.":</label> 
+			$output .= "<div style=\"width: 130%;\"><label for='orderafter'>"._ORDERAFTER.":</label>
 					<select name='orderafter' id='orderafter'>";
 			$output .= "<option value='0'>"._MOVETOP."</option>".(isset($opt2) ? $opt2 : "")."</select> <A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_ORDERAFTER."</span></A></div>
-				<div><label for='category'>"._CATNAME.": </label>
+				<div style=\"width: 130%;\"><label for='category'>"._CATNAME.": </label>
 				<INPUT  type='text' class='textbox=' name='category'".($new ? ">" : "value='$cat1[category]'><input type='hidden' name='catid' value='$cat1[catid]'>")." <A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_CATNAME."</span></A></div>
-				<div><label for='description'>"._DESC.": </label><A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_CATDESC."</span></A>
+				<div style=\"width: 130%;\"><label for='description'>"._DESC.": </label><A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_CATDESC."</span></A>
 				<div style='margin-left: 30%; padding-left: 1em;'><textarea class='textbox' id='description' name='description' id='description' cols='35' rows='4'>".(!$new ? $cat1['description'] : "")."</textarea></div>";
 			if($tinymce)
-				$output .= "<div class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('description');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
-			
+				$output .= "<div style=\"margin-right: 18.6%;\" class='tinytoggle'><input type='checkbox' name='toggle' onclick=\"toogleEditorMode('description');\" checked><label for='toggle'>"._TINYMCETOGGLE."</label></div>";
+
 			$output.= "</div>
-				<div><label for='locked'>"._LOCKED.": </label>
+				<div style=\"width: 130%;\"><label for='locked'>"._LOCKED.": </label>
 				<INPUT type='checkbox' class='checkbox' name='locked'".(!$new && $cat1['locked'] == 1 ? "checked" : "")."> <A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_LOCKED."</span></A></div>
-				<div><label for='image'>"._IMAGE.": </label>
+				<div style=\"width: 130%;\"><label for='image'>"._IMAGE.": </label>
 				<INPUT  type='text' class='textbox='  name='image'".(!$new && $cat1['image'] != "" ? "value='$cat1[image]'": "")."> <A HREF=\"#\" class=\"pophelp\">[?]<span>"._HELP_CATIMAGE."</span></A></div>
-				<INPUT type='submit' class='button' id='submit' value='"._SUBMIT."' name='submit'>
+				<INPUT style=\"margin-left: 41%; margin-top: 0.4em\" type='submit' class='button' id='submit' value='"._SUBMIT."' name='submit'>
 				</form></div><div style='clear: both;'>&nbsp;</div></div>";
 		}
 	}
